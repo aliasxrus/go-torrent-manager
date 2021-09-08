@@ -7,6 +7,7 @@ require (
 	github.com/beego/beego/v2 v2.0.1
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-cmp v0.5.4 // indirect
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
 	github.com/klauspost/cpuid/v2 v2.0.8 // indirect

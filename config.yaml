@@ -1,0 +1,13 @@
+AutoTransfer:
+  - keyType: key
+    keyValue: asdmbfmasdbfmsadf
+    recipient: Cmaasdbmasdb
+    interval: "*/1 * * * * *"
+  - keyType: seed
+    keyValue: asdmbfmasdbfmsadfSS
+    recipient: CmaasdbmasdbSS
+    interval: "*/2 * * * * *"
+  - keyType: key2
+    keyValue: asdmbfmasdbfmsadf22
+    recipient: Cmaasdbmasdb22
+    interval: "*/2 * * * * *"

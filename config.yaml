@@ -1,13 +1,13 @@
 AutoTransfer:
   - keyType: key
-    keyValue: asdmbfmasdbfmsadf
-    recipient: Cmaasdbmasdb
-    interval: "*/1 * * * * *"
+    keyValue: 47944e274f58e5984b8be6a1139534dcfdedec668c44aa1dad03070ec020daea
+    recipient: BHZJ3obt9IYWJWO8r1wQwhpmGpMHjgru1QhZRNq50o30K0FuDF3DaAeI8Wc9fChkjLyFbtH8ajdeLjZiVwEH3rU=
+    interval: 3
   - keyType: seed
-    keyValue: asdmbfmasdbfmsadfSS
-    recipient: CmaasdbmasdbSS
-    interval: "*/2 * * * * *"
-  - keyType: key2
-    keyValue: asdmbfmasdbfmsadf22
-    recipient: Cmaasdbmasdb22
-    interval: "*/2 * * * * *"
+    keyValue: muffin,elbow,monster,regular,burger,lady,thrive,virtual,curve,mammal,reflect,venue
+    recipient: BHZJ3obt9IYWJWO8r1wQwhpmGpMHjgru1QhZRNq50o30K0FuDF3DaAeI8Wc9fChkjLyFbtH8ajdeLjZiVwEH3rU=
+    interval: 5
+  - keyType: key
+    keyValue: CAISIH62lIdicSwIof8Hnc34lI5+n8mETKn2Gedw7R/dg+zy
+    recipient: BHZJ3obt9IYWJWO8r1wQwhpmGpMHjgru1QhZRNq50o30K0FuDF3DaAeI8Wc9fChkjLyFbtH8ajdeLjZiVwEH3rU=
+    interval: 10

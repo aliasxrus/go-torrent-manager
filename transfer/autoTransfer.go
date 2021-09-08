@@ -2,8 +2,10 @@ package transfer
 
 import (
 	"github.com/beego/beego/v2/core/logs"
+	"go-torrent-manager/btfs/util"
 	"go-torrent-manager/conf"
 	model "go-torrent-manager/models"
+	"os"
 )
 
 func init() {
@@ -15,5 +17,10 @@ func init() {
 }
 
 func transfer(transferWallet model.AutoTransferWallet) {
-	logs.Info(transferWallet)
+	address, err := util.GetAddress(transferWallet.KeyType, transferWallet.KeyValue)
+	if err != nil {
+		logs.Error("Generate key for transfer.", err)
+		os.Exit(1)
+	}
+	logs.Info("Transfer added:", address.Base58Address, ", Interval:", transferWallet.Interval, ", Recipient:", transferWallet.Recipient)
 }

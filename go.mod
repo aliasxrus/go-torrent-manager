@@ -15,6 +15,7 @@ require (
 	github.com/multiformats/go-multihash v0.0.15 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/tron-us/go-btfs-common v0.7.25 // indirect
+	github.com/tron-us/go-common/v2 v2.3.0 // indirect
 	github.com/tron-us/protobuf v1.3.7 // indirect
 	github.com/tyler-smith/go-bip32 v1.0.0 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect

@@ -9,10 +9,11 @@ type Config struct {
 }
 
 type AutoTransferWallet struct {
+	Name      string `yaml:"name"`
 	KeyType   string `yaml:"keyType"`
 	KeyValue  string `yaml:"keyValue"`
 	Recipient string `yaml:"recipient"`
-	Interval  string `yaml:"interval"`
+	Interval  int64  `yaml:"interval"`
 	Address   string `yaml:"-"`
 }
 
@@ -24,4 +25,11 @@ type Address struct {
 	LedgerAddress   []byte            `json:"ledgerAddress"`
 	TronAddress     []byte            `json:"tronAddress"`
 	Identity        config.Identity   `json:"identity"`
+}
+
+type Balance struct {
+	TrxBalance    int64            `json:"trxBalance"`
+	LedgerBalance int64            `json:"ledgerBalance"`
+	FreeNetUsage  int64            `json:"freeNetUsage"`
+	TokenBalances map[string]int64 `json:"tokenBalances"`
 }

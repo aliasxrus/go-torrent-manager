@@ -14,6 +14,7 @@ import (
 	"go-torrent-manager/btfs/wallet"
 	"go-torrent-manager/conf"
 	model "go-torrent-manager/models"
+	"math"
 	"os"
 	"time"
 )
@@ -45,7 +46,7 @@ func transfer(transferWallet model.AutoTransferWallet) {
 			logs.Error("Wallet:", transferWallet.Name, "Get balance error.", err.Error())
 			continue
 		}
-		logs.Info("Wallet:", transferWallet.Name, "Balance:", balance.LedgerBalance)
+		logs.Info("Wallet:", transferWallet.Name, "Balance:", math.Floor(float64(balance.LedgerBalance))/1000000, "Sum:", math.Floor(float64(transferWallet.Sum))/1000000)
 		if balance.LedgerBalance == 0 {
 			continue
 		}
@@ -88,7 +89,8 @@ func transfer(transferWallet model.AutoTransferWallet) {
 				if response == nil {
 					return fmt.Errorf("escrow reponse is nil")
 				}
-				logs.Info("Wallet:", transferWallet.Name, "Balance after:", response.Balance)
+				transferWallet.Sum += request.TransferRequest.Amount
+				logs.Info("Wallet:", transferWallet.Name, "Balance after:", math.Floor(float64(response.Balance))/1000000, "Sum:", math.Floor(float64(transferWallet.Sum))/1000000)
 				return nil
 			})
 		if err != nil {

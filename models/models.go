@@ -15,6 +15,7 @@ type AutoTransferWallet struct {
 	Recipient string `yaml:"recipient"`
 	Interval  int64  `yaml:"interval"`
 	Address   string `yaml:"-"`
+	Sum       int64  `yaml:"-"`
 }
 
 type Address struct {

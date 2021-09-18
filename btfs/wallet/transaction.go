@@ -3,8 +3,6 @@ package wallet
 import (
 	"context"
 	"crypto/ecdsa"
-	"errors"
-	"fmt"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/tron-us/go-btfs-common/ledger"
 	escrowpb "github.com/tron-us/go-btfs-common/protos/escrow"
@@ -16,13 +14,6 @@ import (
 
 var exchangeService = "https://exchange.bt.co"
 var escrowService = "https://escrow.btfs.io"
-
-var (
-	ErrInsufficientExchangeBalanceOnTron   = errors.New("exchange balance on Tron network is not sufficient")
-	ErrInsufficientUserBalanceOnTron       = errors.New(fmt.Sprint("User balance on tron network is not sufficient."))
-	ErrInsufficientUserBalanceOnLedger     = errors.New("rpc error: code = ResourceExhausted desc = NSF")
-	ErrInsufficientExchangeBalanceOnLedger = errors.New("exchange balance on Private Ledger is not sufficient")
-)
 
 // Call exchange's Withdraw API
 func PrepareWithdraw(ctx context.Context, ledgerAddr, externalAddr []byte, amount, outTxId int64) (

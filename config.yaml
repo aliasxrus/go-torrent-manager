@@ -52,3 +52,10 @@ AutoWithdrawWallets:
     difference: 0
     # Минимальный баланс BTT на шлюзе при котором начинать попытку вывода.
     minAmount: 0
+
+  # Одновременно можно указать много кошельков:
+#  - name: NameSeed5
+#    keyType: seed
+#    keyValue: muffin,elbow,monster,regular,burger,lady,thrive,virtual,curve,mammal,reflect,venue
+#    difference: 1
+#    minAmount: 20000

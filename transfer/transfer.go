@@ -19,7 +19,6 @@ import (
 )
 
 var escrowService = "https://escrow.btfs.io"
-var solidityService = "grpc.trongrid.io:50052"
 
 func init() {
 	config := conf.Get()

@@ -21,7 +21,6 @@ import (
 )
 
 var escrowService = "https://escrow.btfs.io"
-var solidityService = "grpc.trongrid.io:50052"
 
 var (
 	ErrInsufficientExchangeBalanceOnTron   = errors.New("exchange balance on Tron network is not sufficient")

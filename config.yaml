@@ -31,8 +31,8 @@ AutoTransferWallets:
 
 # Настройки автоматического вывода
 AutoWithdrawConfig:
-  # Пауза между получением баланса шлюза, в секундах
-  interval: 1
+  # Пауза между получением баланса шлюза, в миллисекундах
+  interval: 1000
   # Ссылка для получения баланса
   url: "https://apiasia.tronscan.io:5566/api/account?address=TTZu7wpHa9tnQjFUDrsjgPfXE7fck7yYs5"
   # Частота обновления баланса кошельков. 30 - каждый 30 раз получения баланса шлюза

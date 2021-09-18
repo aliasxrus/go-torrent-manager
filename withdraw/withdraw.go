@@ -37,8 +37,8 @@ func init() {
 		return
 	}
 
-	if config.AutoWithdrawConfig.Interval < 1 {
-		config.AutoWithdrawConfig.Interval = 1
+	if config.AutoWithdrawConfig.Interval < 100 {
+		config.AutoWithdrawConfig.Interval = 100
 	}
 
 	for i, withdrawWallet := range config.AutoWithdrawWallets {

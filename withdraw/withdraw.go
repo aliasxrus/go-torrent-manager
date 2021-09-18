@@ -2,6 +2,7 @@ package withdraw
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"github.com/beego/beego/v2/core/logs"
@@ -43,6 +44,7 @@ func init() {
 			logs.Error("Generate key for withdraw.", err)
 			os.Exit(1)
 		}
+		logs.Info(config.AutoWithdrawWallets[i].Name, "BttRecipientAddress:", hex.EncodeToString(config.AutoWithdrawWallets[i].Address.TronAddress))
 	}
 
 	go autoWithdraw(&config.AutoWithdrawWallets, &config)
@@ -68,7 +70,7 @@ func autoWithdraw(wallets *[]model.AutoWithdrawWallet, config *model.Config) {
 				continue
 			}
 
-			withdraw(&withdrawWallet, &gatewayBalance)
+			withdraw(withdrawWallet, gatewayBalance)
 			withdrawWallet.GatewayBalance = gatewayBalance
 		}
 
@@ -78,7 +80,7 @@ func autoWithdraw(wallets *[]model.AutoWithdrawWallet, config *model.Config) {
 	}
 }
 
-func withdraw(withdrawWallet *model.AutoWithdrawWallet, gatewayBalance *model.Balance) {
+func withdraw(withdrawWallet model.AutoWithdrawWallet, gatewayBalance model.Balance) {
 	amount := withdrawWallet.LedgerBalance
 	if amount > 99999000000 {
 		amount = 99999000000
@@ -92,10 +94,18 @@ func withdraw(withdrawWallet *model.AutoWithdrawWallet, gatewayBalance *model.Ba
 	withdrawWallet.LedgerBalance -= amount
 }
 
-func sendWithdraw(withdrawWallet *model.AutoWithdrawWallet, amount int64) {
+func sendWithdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 	logs.Info("Withdraw begin!", withdrawWallet.Name)
 	outTxId := time.Now().UnixNano()
 
+	if withdrawWallet.BttRecipientAddress != "" {
+		decodeString, err := hex.DecodeString(withdrawWallet.BttRecipientAddress)
+		if err != nil {
+			logs.Error("Send withdraw, decodeString BttRecipientAddress", err.Error())
+			return
+		}
+		withdrawWallet.Address.LedgerAddress = decodeString
+	}
 	//PrepareWithdraw
 	prepareResponse, err := wallet.PrepareWithdraw(context.Background(), withdrawWallet.Address.LedgerAddress, withdrawWallet.Address.TronAddress, amount, outTxId)
 	if err != nil {

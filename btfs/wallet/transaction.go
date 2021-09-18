@@ -3,7 +3,6 @@ package wallet
 import (
 	"context"
 	"crypto/ecdsa"
-	"github.com/beego/beego/v2/core/logs"
 	"github.com/tron-us/go-btfs-common/ledger"
 	escrowpb "github.com/tron-us/go-btfs-common/protos/escrow"
 	exPb "github.com/tron-us/go-btfs-common/protos/exchange"
@@ -28,7 +27,6 @@ func PrepareWithdraw(ctx context.Context, ledgerAddr, externalAddr []byte, amoun
 			if err != nil {
 				return err
 			}
-			logs.Debug(prepareResponse)
 			return nil
 		})
 	if err != nil {

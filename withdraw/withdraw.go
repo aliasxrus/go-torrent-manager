@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/tron-us/go-btfs-common/ledger"
 	escrowpb "github.com/tron-us/go-btfs-common/protos/escrow"
 	exPb "github.com/tron-us/go-btfs-common/protos/exchange"
 	ledgerPb "github.com/tron-us/go-btfs-common/protos/ledger"
@@ -199,40 +198,16 @@ func getGatewayBalance(config *model.Config) model.Balance {
 	return balance
 }
 
-func refreshBalances(wallets []model.AutoWithdrawWallet) {
-	for i, wallet := range wallets {
-		ledgerBalance, err := GetLedgerBalance(wallet.Address)
+func refreshBalances(withdrawWallets []model.AutoWithdrawWallet) {
+	for i, withdrawWallet := range withdrawWallets {
+		ledgerBalance, err := wallet.GetLedgerBalance(withdrawWallet.Address)
 		if err != nil {
-			logs.Error("Wallet:", wallet.Name, "Get balance error.", err.Error())
+			logs.Error("Wallet:", withdrawWallet.Name, "Get balance error.", err.Error())
 			continue
 		}
-		wallets[i].LedgerBalance = ledgerBalance
-		logs.Info("Wallet", wallets[i].Name, ", ledger balance:", ledgerBalance/1000000)
+		withdrawWallets[i].LedgerBalance = ledgerBalance
+		logs.Info("Wallet", withdrawWallets[i].Name, ", ledger balance:", ledgerBalance/1000000)
 	}
-}
-
-func GetLedgerBalance(address model.Address) (int64, error) {
-	privKey, err := address.Identity.DecodePrivateKey("")
-	if err != nil {
-		return 0, err
-	}
-	lgSignedPubKey, err := ledger.NewSignedPublicKey(privKey, privKey.GetPublic())
-
-	var balance int64 = 0
-	err = grpc.EscrowClient(escrowService).WithContext(context.Background(),
-		func(ctx context.Context, client escrowpb.EscrowServiceClient) error {
-			res, err := client.BalanceOf(ctx, ledger.NewSignedCreateAccountRequest(lgSignedPubKey.Key, lgSignedPubKey.Signature))
-			if err != nil {
-				return err
-			}
-			balance = res.Result.Balance
-			return nil
-		})
-	if err != nil {
-		return 0, err
-	}
-
-	return balance, nil
 }
 
 //hex.EncodeToString(addr.Bytes())

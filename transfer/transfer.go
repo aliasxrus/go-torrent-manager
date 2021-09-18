@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/tron-us/go-btfs-common/ledger"
 	escrowpb "github.com/tron-us/go-btfs-common/protos/escrow"
 	ledgerpb "github.com/tron-us/go-btfs-common/protos/ledger"
 	"github.com/tron-us/go-btfs-common/utils/grpc"
@@ -44,7 +43,7 @@ func transfer(transferWallet model.AutoTransferWallet) {
 
 	for true {
 		time.Sleep(time.Duration(transferWallet.Interval) * time.Second)
-		balance.LedgerBalance, err = GetLedgerBalance(address)
+		balance.LedgerBalance, err = wallet.GetLedgerBalance(address)
 		if err != nil {
 			logs.Error("Wallet:", transferWallet.Name, "Get balance error.", err.Error())
 			continue
@@ -100,28 +99,4 @@ func transfer(transferWallet model.AutoTransferWallet) {
 			logs.Error("Wallet:", transferWallet.Name, "Transfer request error.", err.Error())
 		}
 	}
-}
-
-func GetLedgerBalance(address model.Address) (int64, error) {
-	privKey, err := address.Identity.DecodePrivateKey("")
-	if err != nil {
-		return 0, err
-	}
-	lgSignedPubKey, err := ledger.NewSignedPublicKey(privKey, privKey.GetPublic())
-
-	var balance int64 = 0
-	err = grpc.EscrowClient(escrowService).WithContext(context.Background(),
-		func(ctx context.Context, client escrowpb.EscrowServiceClient) error {
-			res, err := client.BalanceOf(ctx, ledger.NewSignedCreateAccountRequest(lgSignedPubKey.Key, lgSignedPubKey.Signature))
-			if err != nil {
-				return err
-			}
-			balance = res.Result.Balance
-			return nil
-		})
-	if err != nil {
-		return 0, err
-	}
-
-	return balance, nil
 }

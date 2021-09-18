@@ -6,12 +6,16 @@ import (
 	"errors"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
+	"github.com/tron-us/go-btfs-common/ledger"
+	escrowpb "github.com/tron-us/go-btfs-common/protos/escrow"
 	exPb "github.com/tron-us/go-btfs-common/protos/exchange"
 	ledgerPb "github.com/tron-us/go-btfs-common/protos/ledger"
 	"github.com/tron-us/go-btfs-common/utils/grpc"
+	model "go-torrent-manager/models"
 )
 
 var exchangeService = "https://exchange.bt.co"
+var escrowService = "https://escrow.btfs.io"
 
 var (
 	ErrInsufficientExchangeBalanceOnTron   = errors.New("exchange balance on Tron network is not sufficient")
@@ -111,4 +115,28 @@ func WithdrawRequest(ctx context.Context, channelId *ledgerPb.ChannelID, ledgerA
 		return nil, err
 	}
 	return withdrawResponse, nil
+}
+
+func GetLedgerBalance(address model.Address) (int64, error) {
+	privKey, err := address.Identity.DecodePrivateKey("")
+	if err != nil {
+		return 0, err
+	}
+	lgSignedPubKey, err := ledger.NewSignedPublicKey(privKey, privKey.GetPublic())
+
+	var balance int64 = 0
+	err = grpc.EscrowClient(escrowService).WithContext(context.Background(),
+		func(ctx context.Context, client escrowpb.EscrowServiceClient) error {
+			res, err := client.BalanceOf(ctx, ledger.NewSignedCreateAccountRequest(lgSignedPubKey.Key, lgSignedPubKey.Signature))
+			if err != nil {
+				return err
+			}
+			balance = res.Result.Balance
+			return nil
+		})
+	if err != nil {
+		return 0, err
+	}
+
+	return balance, nil
 }

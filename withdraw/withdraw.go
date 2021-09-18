@@ -176,27 +176,29 @@ func getGatewayBalance(config *model.Config) model.Balance {
 		return balance
 	}
 
-	for _, tokenBalances := range gateway.TokenBalances {
-		if tokenBalances.TokenId == "_" {
-			TrxBalance, err := strconv.Atoi(tokenBalances.Balance)
-			if err != nil {
-				logs.Error("Parse TrxBalance error.", err)
-				return balance
+	if gateway.Data == nil {
+		balance.FreeNetUsage = gateway.Bandwidth.FreeNetUsed
+		for _, tokenBalances := range gateway.TokenBalances {
+			if tokenBalances.TokenId == "_" {
+				TrxBalance, err := strconv.Atoi(tokenBalances.Balance)
+				if err != nil {
+					logs.Error("Parse TrxBalance error.", err)
+					return balance
+				}
+				balance.TrxBalance = int64(TrxBalance)
 			}
-			balance.TrxBalance = int64(TrxBalance)
-		}
 
-		if tokenBalances.TokenId == "1002000" {
-			BttBalance, err := strconv.Atoi(tokenBalances.Balance)
-			if err != nil {
-				logs.Error("Parse BttBalance error.", err)
-				return balance
+			if tokenBalances.TokenId == "1002000" {
+				BttBalance, err := strconv.Atoi(tokenBalances.Balance)
+				if err != nil {
+					logs.Error("Parse BttBalance error.", err)
+					return balance
+				}
+				balance.BttBalance = int64(BttBalance)
 			}
-			balance.BttBalance = int64(BttBalance)
 		}
+	} else {
 	}
-
-	balance.FreeNetUsage = gateway.Bandwidth.FreeNetUsed
 
 	return balance
 }

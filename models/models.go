@@ -67,4 +67,12 @@ type TronScanResponse struct {
 		FreeNetRemaining int64 `json:"freeNetRemaining"`
 		FreeNetUsed      int64 `json:"freeNetUsed"`
 	} `json:"bandwidth"`
+	Data []struct {
+		AssetV2 []struct {
+			Key   string `json:"key"`
+			Value int64  `json:"value"`
+		} `json:"assetV2"`
+		Balance      int64 `json:"balance"`
+		FreeNetUsage int64 `json:"free_net_usage"`
+	} `json:"data"`
 }

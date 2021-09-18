@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/beego/beego/v2/core/logs"
 	escrowpb "github.com/tron-us/go-btfs-common/protos/escrow"
 	exPb "github.com/tron-us/go-btfs-common/protos/exchange"
@@ -23,10 +22,7 @@ import (
 var escrowService = "https://escrow.btfs.io"
 
 var (
-	ErrInsufficientExchangeBalanceOnTron   = errors.New("exchange balance on Tron network is not sufficient")
-	ErrInsufficientUserBalanceOnTron       = errors.New(fmt.Sprint("User balance on tron network is not sufficient."))
-	ErrInsufficientUserBalanceOnLedger     = errors.New("rpc error: code = ResourceExhausted desc = NSF")
-	ErrInsufficientExchangeBalanceOnLedger = errors.New("exchange balance on Private Ledger is not sufficient")
+	ErrInsufficientUserBalanceOnLedger = errors.New("rpc error: code = ResourceExhausted desc = NSF")
 )
 
 func init() {
@@ -110,7 +106,7 @@ func sendWithdraw(withdrawWallet *model.AutoWithdrawWallet, amount int64) {
 		logs.Error("Send withdraw, PrepareWithdraw, response code:", prepareResponse.Response.Code, string(prepareResponse.Response.ReturnMessage))
 		return
 	}
-	logs.Debug(fmt.Sprintf("Prepare withdraw success, id: [%d]", prepareResponse.GetId()))
+	logs.Debug("Prepare withdraw success, id:", prepareResponse.GetId())
 
 	channelCommit := &ledgerPb.ChannelCommit{
 		Payer:     &ledgerPb.PublicKey{Key: withdrawWallet.Address.LedgerAddress},
@@ -142,11 +138,11 @@ func sendWithdraw(withdrawWallet *model.AutoWithdrawWallet, amount int64) {
 		logs.Error("Send withdraw, CreateChannel", string(prepareResponse.Response.ReturnMessage))
 		return
 	}
-	logs.Debug(fmt.Sprintf("CreateChannel success, channelId: [%d]", channelId.GetId()))
+	logs.Debug("CreateChannel success, channelId:", channelId.GetId())
 
 	//Do the WithdrawRequest.
 	withdrawResponse, err := wallet.WithdrawRequest(context.Background(), channelId, withdrawWallet.Address.LedgerAddress, amount, prepareResponse, withdrawWallet.Address.PrivateKeyEcdsa)
-	fmt.Println("withdrawResponse:", string(withdrawResponse.Response.ReturnMessage))
+	logs.Info("withdrawResponse:", string(withdrawResponse.Response.ReturnMessage))
 	if err != nil {
 		logs.Error("Send withdraw, WithdrawRequest", err.Error())
 		return
@@ -157,7 +153,7 @@ func sendWithdraw(withdrawWallet *model.AutoWithdrawWallet, amount int64) {
 		return
 	}
 	logs.Debug("Withdraw end!", withdrawWallet.Name)
-	fmt.Println(fmt.Sprintf("Withdraw submitted! ChannelId: [%d], id [%d]\n", channelId.Id, prepareResponse.GetId()))
+	logs.Info("Withdraw submitted!", channelId.Id, prepareResponse.GetId())
 }
 
 func getGatewayBalance(config *model.Config) model.Balance {

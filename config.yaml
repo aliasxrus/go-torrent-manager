@@ -1,16 +1,54 @@
-AutoTransfer:
-  - name: Ключ1
+# Наша группа https://t.me/btt_manager
+
+# Настройки автоматического перевода
+AutoTransferWallets:
+    # Имя кошелка, для вывода в логи. Придумываем сами
+  - name: NameKey1
+    # Тип ключа, возможные варианты: key, seed
     keyType: key
+    # Ключ или 12 слов в зависимости от указанного keyType
+    # 12 слов указываем с маленькой буквы через запятую
+    # Ключ можно использовать из speed или btfs
     keyValue: 47944e274f58e5984b8be6a1139534dcfdedec668c44aa1dad03070ec020daea
+    # Получатель переводов, его можно получить:
+    # 1. В кошельке speed, указав порт http://127.0.0.1:ВАШ_ПОРТ_SPEED/api/public_key
+    # 2. Через программу address2.exe https://github.com/aliasxrus/get-tron-address
     recipient: BHZJ3obt9IYWJWO8r1wQwhpmGpMHjgru1QhZRNq50o30K0FuDF3DaAeI8Wc9fChkjLyFbtH8ajdeLjZiVwEH3rU=
+    # Пауза между переводами в секундах
     interval: 3
-  - name: Ключ2
-    keyType: seed
-    keyValue: muffin,elbow,monster,regular,burger,lady,thrive,virtual,curve,mammal,reflect,venue
-    recipient: BHZJ3obt9IYWJWO8r1wQwhpmGpMHjgru1QhZRNq50o30K0FuDF3DaAeI8Wc9fChkjLyFbtH8ajdeLjZiVwEH3rU=
-    interval: 5
-  - name: Ууууууу
+
+    # Одновременно можно указать много кошельков:
+#  - name: NameSeed2
+#    keyType: seed
+#    keyValue: muffin,elbow,monster,regular,burger,lady,thrive,virtual,curve,mammal,reflect,venue
+#    recipient: BHZJ3obt9IYWJWO8r1wQwhpmGpMHjgru1QhZRNq50o30K0FuDF3DaAeI8Wc9fChkjLyFbtH8ajdeLjZiVwEH3rU=
+#    interval: 5
+#  - name: NameKey3
+#    keyType: key
+#    keyValue: CAISIH62lIdicSwIof8Hnc34lI5+n8mETKn2Gedw7R/dg+zy
+#    recipient: BHZJ3obt9IYWJWO8r1wQwhpmGpMHjgru1QhZRNq50o30K0FuDF3DaAeI8Wc9fChkjLyFbtH8ajdeLjZiVwEH3rU=
+#    interval: 10
+
+# Настройки автоматического вывода
+AutoWithdrawConfig:
+  # Пауза между получением баланса шлюза, в секундах
+  interval: 1
+  # Ссылка для получения баланса
+  url: "https://apiasia.tronscan.io:5566/api/account?address=TTZu7wpHa9tnQjFUDrsjgPfXE7fck7yYs5"
+  # Частота обновления баланса кошельков. 30 - каждый 30 раз получения баланса шлюза
+  refresh: 30
+
+# Кошельки для автоматического вывода
+AutoWithdrawWallets:
+    # Имя кошелка, для вывода в логи. Придумываем сами
+  - name: NameKey4
+    # Тип ключа, возможные варианты: key, seed
     keyType: key
-    keyValue: CAISIH62lIdicSwIof8Hnc34lI5+n8mETKn2Gedw7R/dg+zy
-    recipient: BHZJ3obt9IYWJWO8r1wQwhpmGpMHjgru1QhZRNq50o30K0FuDF3DaAeI8Wc9fChkjLyFbtH8ajdeLjZiVwEH3rU=
-    interval: 10
+    # Ключ или 12 слов в зависимости от указанного keyType
+    # 12 слов указываем с маленькой буквы через запятую
+    # Ключ можно использовать из speed или btfs
+    keyValue: 47944e274f58e5984b8be6a1139534dcfdedec668c44aa1dad03070ec020daea
+    # Выводить только когда есть другие выводы из шлюза. Минимальная разница в балансе шлюза между запросами получения баланса для попытки вывода.
+    difference: 0
+    # Минимальный баланс BTT на шлюзе при котором начинать попытку вывода.
+    minAmount: 0

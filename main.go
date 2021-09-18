@@ -6,6 +6,7 @@ import (
 	"go-torrent-manager/conf"
 	_ "go-torrent-manager/routers"
 	_ "go-torrent-manager/transfer"
+	_ "go-torrent-manager/withdraw"
 )
 
 func main() {

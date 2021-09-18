@@ -3,6 +3,7 @@ module go-torrent-manager
 go 1.16
 
 require (
+	github.com/TRON-US/go-btfs v1.5.0 // indirect
 	github.com/TRON-US/go-btfs-config v0.10.0
 	github.com/beego/beego/v2 v2.0.1
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
@@ -10,6 +11,7 @@ require (
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-cmp v0.5.4 // indirect
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
+	github.com/ipfs/go-datastore v0.4.5 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.8 // indirect
 	github.com/libp2p/go-libp2p-core v0.9.0 // indirect
 	github.com/multiformats/go-multiaddr v0.4.0 // indirect

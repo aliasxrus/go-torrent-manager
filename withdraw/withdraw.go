@@ -33,6 +33,10 @@ func init() {
 	var err error
 	config := conf.Get()
 
+	if config.AutoWithdrawWallets == nil {
+		return
+	}
+
 	if config.AutoWithdrawConfig.Interval < 1 {
 		config.AutoWithdrawConfig.Interval = 1
 	}

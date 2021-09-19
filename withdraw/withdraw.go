@@ -60,6 +60,9 @@ func autoWithdraw(wallets *[]model.AutoWithdrawWallet, config *model.Config) {
 	logs.Info("Start auto withdraw")
 	refreshBalances(*wallets)
 	for count := int64(0); true; count++ {
+		if count%config.AutoWithdrawConfig.Refresh == 0 {
+			refreshBalances(*wallets)
+		}
 		time.Sleep(time.Duration(config.AutoWithdrawConfig.Interval) * time.Millisecond)
 
 		gatewayBalance := getGatewayBalance(config)
@@ -78,10 +81,6 @@ func autoWithdraw(wallets *[]model.AutoWithdrawWallet, config *model.Config) {
 
 			withdraw(withdrawWallet, gatewayBalance)
 			withdrawWallet.GatewayBalance = gatewayBalance
-		}
-
-		if count%config.AutoWithdrawConfig.Refresh == 0 {
-			refreshBalances(*wallets)
 		}
 	}
 }

@@ -65,7 +65,9 @@ func autoWithdraw(wallets *[]model.AutoWithdrawWallet, config *model.Config) {
 		time.Sleep(time.Duration(config.AutoWithdrawConfig.Interval) * time.Millisecond)
 
 		gatewayBalance := getGatewayBalance(config)
-		logs.Debug("Gateway balance:", gatewayBalance.BttBalance/1000000)
+		if config.AutoWithdrawWallets[0].GatewayBalance.BttBalance != gatewayBalance.BttBalance {
+			logs.Info("Gateway balance:", gatewayBalance.BttBalance/1000000)
+		}
 		if gatewayBalance.BttBalance < 1000000000 ||
 			gatewayBalance.TrxBalance < 282000 {
 			continue
@@ -90,7 +92,7 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, gatewayBalance model.Bala
 		amount = 99999000000
 	}
 
-	if gatewayBalance.BttBalance > amount {
+	if gatewayBalance.BttBalance < amount {
 		amount = gatewayBalance.BttBalance
 	}
 
@@ -99,7 +101,7 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, gatewayBalance model.Bala
 }
 
 func sendWithdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
-	logs.Info("Withdraw begin!", withdrawWallet.Name)
+	logs.Info("Withdraw begin!", withdrawWallet.Name, "Amount:", amount)
 	outTxId := time.Now().UnixNano() + time.Now().UnixNano()
 
 	if withdrawWallet.BttRecipientAddress != "" {
@@ -166,7 +168,7 @@ func sendWithdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 		logs.Error("Send withdraw, withdrawResponse", withdrawWallet.Name, string(withdrawResponse.Response.ReturnMessage))
 		return
 	}
-	logs.Info("Withdraw submitted!", withdrawWallet.Name, channelId.Id, prepareResponse.GetId())
+	logs.Info("CONGRATULATION! Withdraw submitted!", withdrawWallet.Name, channelId.Id, prepareResponse.GetId())
 }
 
 func getGatewayBalance(config *model.Config) model.Balance {

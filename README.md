@@ -1,4 +1,5 @@
-# go-torrent-manager
+# Go Torrent Manager
+MVP v. 0.0.2
 - GOOS=linux GOARCH=amd64 go build -o torrent-manager-linux
 - GOOS=darwin GOARCH=amd64 go build -o torrent-manager-darwin
 - GOOS=windows GOARCH=386 go build -o torrent-manager.exe

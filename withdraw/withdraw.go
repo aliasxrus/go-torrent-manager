@@ -58,7 +58,6 @@ func init() {
 
 func autoWithdraw(wallets *[]model.AutoWithdrawWallet, config *model.Config) {
 	logs.Info("Start auto withdraw")
-	refreshBalances(*wallets)
 	for count := int64(0); true; count++ {
 		if count%config.AutoWithdrawConfig.Refresh == 0 {
 			refreshBalances(*wallets)

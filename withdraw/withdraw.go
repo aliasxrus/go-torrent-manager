@@ -77,6 +77,7 @@ func autoWithdraw(wallets *[]model.AutoWithdrawWallet, config *model.Config) {
 			if gatewayBalance.BttBalance < withdrawWallet.MinAmount*1000000 ||
 				withdrawWallet.LedgerBalance < 1000000000 ||
 				(withdrawWallet.Difference > 0 && withdrawWallet.GatewayBalance.BttBalance-gatewayBalance.BttBalance < withdrawWallet.Difference) {
+				withdrawWallet.GatewayBalance = gatewayBalance
 				continue
 			}
 

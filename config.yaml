@@ -52,6 +52,9 @@ AutoWithdrawWallets:
     difference: 0
     # Минимальный баланс BTT на шлюзе при котором начинать попытку вывода.
     minAmount: 0
+    # Получатель платежа, позволяет выводить на другой кошелёк
+    # Все эти адреса программа выводит в консоль при запуске. Для использования необходимо раскомментировать нижнюю строчку (удалить # в начале строки)
+#    bttRecipientAddress:
 
   # Одновременно можно указать много кошельков:
 #  - name: NameSeed5
@@ -59,3 +62,4 @@ AutoWithdrawWallets:
 #    keyValue: muffin,elbow,monster,regular,burger,lady,thrive,virtual,curve,mammal,reflect,venue
 #    difference: 1
 #    minAmount: 20000
+#    bttRecipientAddress:

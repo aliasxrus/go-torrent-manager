@@ -2,6 +2,7 @@ package withdraw
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -44,7 +45,12 @@ func init() {
 			logs.Error("Generate key for withdraw.", err)
 			os.Exit(1)
 		}
-		logs.Info(config.AutoWithdrawWallets[i].Name, "BttRecipientAddress:", hex.EncodeToString(config.AutoWithdrawWallets[i].Address.TronAddress))
+		if withdrawWallet.BttRecipientAddress == "" {
+			logs.Info(config.AutoWithdrawWallets[i].Name, "BttRecipientAddress:", hex.EncodeToString(config.AutoWithdrawWallets[i].Address.TronAddress))
+		} else {
+			logs.Info(config.AutoWithdrawWallets[i].Name, "BttRecipientAddress:", withdrawWallet.BttRecipientAddress)
+		}
+		logs.Info(config.AutoWithdrawWallets[i].Name, "LedgerAddress:", base64.StdEncoding.EncodeToString(config.AutoWithdrawWallets[i].Address.LedgerAddress))
 	}
 
 	go autoWithdraw(&config.AutoWithdrawWallets, &config)

@@ -40,17 +40,17 @@ type AutoWithdrawWallet struct {
 	LedgerBalance         int64     `yaml:"-"`
 }
 
-type BalanceChannel struct {
-	WalletIndex   int
-	LedgerBalance int64
-}
-
 type AutoWithdrawConfig struct {
 	Interval        int64     `yaml:"interval"`
 	Url             string    `yaml:"url"`
-	RefreshTimeout  int64     `yaml:"refreshTimeout"`  // Частота обновления баланса кошельков, мс
+	RefreshTimeout  int64     `yaml:"refreshTimeout"`  // Частота обновления баланса кошельков, секунд
 	TimeoutWithdraw int64     `yaml:"timeoutWithdraw"` // Минимальный таймаут между попытками, мс
 	LastWithdraw    time.Time `yaml:"-"`               // Время последней попытки
+}
+
+type BalanceChannel struct {
+	WalletIndex   int
+	LedgerBalance int64
 }
 
 type Address struct {

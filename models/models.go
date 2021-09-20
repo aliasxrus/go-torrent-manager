@@ -1,7 +1,10 @@
 package model
 
-import "crypto/ecdsa"
-import config "github.com/TRON-US/go-btfs-config"
+import (
+	"crypto/ecdsa"
+	config "github.com/TRON-US/go-btfs-config"
+	"time"
+)
 
 type Config struct {
 	Version             string
@@ -21,23 +24,33 @@ type AutoTransferWallet struct {
 }
 
 type AutoWithdrawWallet struct {
-	Name                string  `yaml:"name"`
-	KeyType             string  `yaml:"keyType"`
-	KeyValue            string  `yaml:"keyValue"`
-	Strategy            int64   `yaml:"strategy"` // balance, in, out, diff
-	Difference          int64   `yaml:"difference"`
-	MinAmount           int64   `yaml:"minAmount"`
-	Second              []int   `yaml:"second"`
-	BttRecipientAddress string  `yaml:"bttRecipientAddress"` // Адрес получателя BTT
-	Address             Address `yaml:"-"`
-	GatewayBalance      Balance `yaml:"-"`
-	LedgerBalance       int64   `yaml:"-"`
+	Name                  string    `yaml:"name"`
+	KeyType               string    `yaml:"keyType"`
+	KeyValue              string    `yaml:"keyValue"`
+	Strategy              int64     `yaml:"strategy"` // balance, in, out, diff
+	Difference            int64     `yaml:"difference"`
+	MinAmount             int64     `yaml:"minAmount"`
+	MaxAmount             int64     `yaml:"maxAmount"`
+	Second                []int     `yaml:"second"`
+	BttRecipientAddress   string    `yaml:"bttRecipientAddress"`   // Адрес получателя BTT
+	TimeoutWalletWithdraw int64     `yaml:"timeoutWalletWithdraw"` // Минимальный таймаут между попытками, мс
+	LastWalletWithdraw    time.Time `yaml:"-"`                     // Время последней попытки с этого кошелька
+	Address               Address   `yaml:"-"`
+	GatewayBalance        Balance   `yaml:"-"`
+	LedgerBalance         int64     `yaml:"-"`
+}
+
+type BalanceChannel struct {
+	WalletIndex   int
+	LedgerBalance int64
 }
 
 type AutoWithdrawConfig struct {
-	Interval int64  `yaml:"interval"`
-	Url      string `yaml:"url"`
-	Refresh  int64  `yaml:"refresh"` // Через какое количество интервалов обновлять балансы кошельков
+	Interval        int64     `yaml:"interval"`
+	Url             string    `yaml:"url"`
+	RefreshTimeout  int64     `yaml:"refreshTimeout"`  // Частота обновления баланса кошельков, мс
+	TimeoutWithdraw int64     `yaml:"timeoutWithdraw"` // Минимальный таймаут между попытками, мс
+	LastWithdraw    time.Time `yaml:"-"`               // Время последней попытки
 }
 
 type Address struct {

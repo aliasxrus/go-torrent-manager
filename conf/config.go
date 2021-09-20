@@ -3,10 +3,10 @@ package conf
 import (
 	"github.com/beego/beego/v2/core/logs"
 	model "go-torrent-manager/models"
+	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
 )
-import "gopkg.in/yaml.v3"
 
 var config model.Config
 

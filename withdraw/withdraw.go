@@ -22,10 +22,8 @@ import (
 )
 
 var escrowService = "https://escrow.btfs.io"
-
-var (
-	ErrInsufficientUserBalanceOnLedger = errors.New("rpc error: code = ResourceExhausted desc = NSF")
-)
+var ErrInsufficientUserBalanceOnLedger = errors.New("rpc error: code = ResourceExhausted desc = NSF")
+var balanceChannel = make(chan model.BalanceChannel, 10)
 
 func init() {
 	var err error
@@ -53,55 +51,67 @@ func init() {
 		logs.Info(config.AutoWithdrawWallets[i].Name, "LedgerAddress:", base64.StdEncoding.EncodeToString(config.AutoWithdrawWallets[i].Address.LedgerAddress))
 	}
 
-	go autoWithdraw(&config.AutoWithdrawWallets, &config)
+	go refreshBalances(&config)
+	go autoWithdraw(&config)
 }
 
-func autoWithdraw(wallets *[]model.AutoWithdrawWallet, config *model.Config) {
+func autoWithdraw(config *model.Config) {
 	logs.Info("Start auto withdraw")
-	for count := int64(0); true; count++ {
-		if count%config.AutoWithdrawConfig.Refresh == 0 {
-			refreshBalances(*wallets)
-		}
-		time.Sleep(time.Duration(config.AutoWithdrawConfig.Interval) * time.Millisecond)
 
-		gatewayBalance := getGatewayBalance(config)
-		if config.AutoWithdrawWallets[0].GatewayBalance.BttBalance != gatewayBalance.BttBalance {
-			logs.Info("Gateway balance:", gatewayBalance.BttBalance/1000000)
+	previousGatewayBalance := model.Balance{BttBalance: -1}
+	for count := int64(0); true; count++ {
+		for len(balanceChannel) > 0 {
+			balance := <-balanceChannel
+			if config.AutoWithdrawWallets[balance.WalletIndex].LedgerBalance != balance.LedgerBalance {
+				config.AutoWithdrawWallets[balance.WalletIndex].LedgerBalance = balance.LedgerBalance
+				logs.Info("Wallet", config.AutoWithdrawWallets[balance.WalletIndex].Name, ", ledger balance:", balance.LedgerBalance/1000000)
+			}
 		}
-		if gatewayBalance.BttBalance < 1000000000 ||
-			gatewayBalance.TrxBalance < 282000 {
+
+		time.Sleep(time.Duration(config.AutoWithdrawConfig.Interval) * time.Millisecond)
+		if config.AutoWithdrawConfig.TimeoutWithdraw > time.Since(config.AutoWithdrawConfig.LastWithdraw).Milliseconds() {
 			continue
 		}
 
-		for _, withdrawWallet := range config.AutoWithdrawWallets {
-			if gatewayBalance.BttBalance < withdrawWallet.MinAmount*1000000 ||
-				withdrawWallet.LedgerBalance < 1000000000 ||
-				(withdrawWallet.Difference > 0 && withdrawWallet.GatewayBalance.BttBalance-gatewayBalance.BttBalance < withdrawWallet.Difference) {
-				withdrawWallet.GatewayBalance = gatewayBalance
+		gatewayBalance := getGatewayBalance(config)
+		if previousGatewayBalance.BttBalance != gatewayBalance.BttBalance {
+			logs.Info("Gateway balance:", gatewayBalance.BttBalance/1000000)
+			previousGatewayBalance = gatewayBalance
+		}
+		previousGatewayBalance = gatewayBalance
+
+		if gatewayBalance.BttBalance < 1000000000 || gatewayBalance.TrxBalance < 282000 {
+			continue
+		}
+
+		for i, withdrawWallet := range config.AutoWithdrawWallets {
+			if gatewayBalance.BttBalance < withdrawWallet.MinAmount*1000000 || // Минимальный баланс на шлюзе
+				(withdrawWallet.MaxAmount > 0 && gatewayBalance.BttBalance > withdrawWallet.MaxAmount*1000000) || // Максимальный баланс на шлюзе
+				withdrawWallet.LedgerBalance < 1000000000 || // Недостаточно средств для вывода
+				(withdrawWallet.Difference > 0 && withdrawWallet.GatewayBalance.BttBalance-gatewayBalance.BttBalance < withdrawWallet.Difference) || // Разница в балансе
+				withdrawWallet.TimeoutWalletWithdraw > time.Since(withdrawWallet.LastWalletWithdraw).Milliseconds() { // Таймаут по выводам с одного кошелька
+				config.AutoWithdrawWallets[i].GatewayBalance = gatewayBalance
 				continue
 			}
 
-			withdraw(withdrawWallet, gatewayBalance)
-			withdrawWallet.GatewayBalance = gatewayBalance
+			amount := withdrawWallet.LedgerBalance
+			if amount > 99999000000 {
+				amount = 99999000000
+			}
+			if amount > gatewayBalance.BttBalance {
+				amount = gatewayBalance.BttBalance
+			}
+
+			go withdraw(withdrawWallet, amount)
+			config.AutoWithdrawWallets[i].LastWalletWithdraw = time.Now()
+			config.AutoWithdrawConfig.LastWithdraw = time.Now()
+			config.AutoWithdrawWallets[i].GatewayBalance = gatewayBalance
+			config.AutoWithdrawWallets[i].LedgerBalance -= amount
 		}
 	}
 }
 
-func withdraw(withdrawWallet model.AutoWithdrawWallet, gatewayBalance model.Balance) {
-	amount := withdrawWallet.LedgerBalance
-	if amount > 99999000000 {
-		amount = 99999000000
-	}
-
-	if gatewayBalance.BttBalance < amount {
-		amount = gatewayBalance.BttBalance
-	}
-
-	go sendWithdraw(withdrawWallet, amount)
-	withdrawWallet.LedgerBalance -= amount
-}
-
-func sendWithdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
+func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 	logs.Info("Withdraw begin!", withdrawWallet.Name, "Amount:", amount)
 	outTxId := time.Now().UnixNano() + time.Now().UnixNano()
 
@@ -215,15 +225,17 @@ func getGatewayBalance(config *model.Config) model.Balance {
 	return balance
 }
 
-func refreshBalances(withdrawWallets []model.AutoWithdrawWallet) {
-	for i, withdrawWallet := range withdrawWallets {
-		ledgerBalance, err := wallet.GetLedgerBalance(withdrawWallet.Address)
-		if err != nil {
-			logs.Error("Wallet:", withdrawWallet.Name, "Get balance error.", err.Error())
-			continue
+func refreshBalances(config *model.Config) {
+	for true {
+		for i, withdrawWallet := range config.AutoWithdrawWallets {
+			ledgerBalance, err := wallet.GetLedgerBalance(withdrawWallet.Address)
+			if err != nil {
+				logs.Error("Wallet:", withdrawWallet.Name, "Get balance error.", err.Error())
+				continue
+			}
+			balanceChannel <- model.BalanceChannel{WalletIndex: i, LedgerBalance: ledgerBalance}
 		}
-		withdrawWallets[i].LedgerBalance = ledgerBalance
-		logs.Info("Wallet", withdrawWallets[i].Name, ", ledger balance:", ledgerBalance/1000000)
+		time.Sleep(time.Duration(config.AutoWithdrawConfig.RefreshTimeout) * time.Second)
 	}
 }
 

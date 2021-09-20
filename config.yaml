@@ -36,7 +36,7 @@ AutoWithdrawConfig:
   # Ссылка для получения баланса
   url: "https://apiasia.tronscan.io:5566/api/account?address=TTZu7wpHa9tnQjFUDrsjgPfXE7fck7yYs5"
   # Частота обновления баланса кошельков, в секундах
-  refreshTimeout: 1
+  refreshTimeout: 60
   # Минимальный таймаут между попытками вывода, в миллисекундах
   timeoutWithdraw: 3000
 

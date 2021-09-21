@@ -69,6 +69,7 @@ func autoWithdraw(config *model.Config) {
 		}
 
 		time.Sleep(time.Duration(config.AutoWithdrawConfig.Interval) * time.Millisecond)
+		// Минимальный таймаут между попытками вывода, в миллисекундах
 		if config.AutoWithdrawConfig.TimeoutWithdraw > time.Since(config.AutoWithdrawConfig.LastWithdraw).Milliseconds() {
 			continue
 		}
@@ -89,7 +90,8 @@ func autoWithdraw(config *model.Config) {
 				(withdrawWallet.MaxAmount > 0 && gatewayBalance.BttBalance > withdrawWallet.MaxAmount*1000000) || // Максимальный баланс на шлюзе
 				withdrawWallet.LedgerBalance < 1000000000 || // Недостаточно средств для вывода
 				(withdrawWallet.Difference > 0 && withdrawWallet.GatewayBalance.BttBalance-gatewayBalance.BttBalance < withdrawWallet.Difference) || // Разница в балансе
-				withdrawWallet.TimeoutWalletWithdraw > time.Since(withdrawWallet.LastWalletWithdraw).Milliseconds() { // Таймаут по выводам с одного кошелька
+				withdrawWallet.TimeoutWalletWithdraw > time.Since(withdrawWallet.LastWalletWithdraw).Milliseconds() || // Таймаут по выводам с одного кошелька
+				config.AutoWithdrawConfig.TimeoutWithdraw > time.Since(config.AutoWithdrawConfig.LastWithdraw).Milliseconds() { // Таймаут по выводам
 				config.AutoWithdrawWallets[i].GatewayBalance = gatewayBalance
 				continue
 			}

@@ -25,7 +25,12 @@ func Get() model.Config {
 }
 
 func initConfig() (model.Config, error) {
-	data, err := ioutil.ReadFile("config.yaml")
+	path, exists := os.LookupEnv("CONFIG_PATH")
+	if !exists {
+		path = "config.yaml"
+	}
+
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		logs.Error("Read yaml file error.", err)
 		return config, err

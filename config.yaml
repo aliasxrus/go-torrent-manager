@@ -45,7 +45,7 @@ AutoWithdrawConfig:
 AutoWithdrawWallets:
     # Имя кошелка, для вывода в логи. Придумываем сами
   - name: NameKey4
-    # Тип ключа, возможные варианты: key, seed
+    # Тип ключа, который будете указывать в keyValue, возможные варианты: key, seed
     keyType: key
     # Ключ или 12 слов в зависимости от указанного keyType
     # 12 слов указываем с маленькой буквы через запятую
@@ -60,12 +60,19 @@ AutoWithdrawWallets:
     # Минимальный таймаут между попытками вывода для этого кошелька, в миллисекундах
     timeoutWalletWithdraw: 0
     # ** ОПЦИОНАЛЬНО ** Получатель платежа, позволяет выводить на другой кошелёк.
-    # Проверить адрес можно заменив конец этой ссылки на свой адрес https://api.trongrid.io/v1/accounts/TR5vQjeg6LojfCKyvafhENMeAbJLTLQYh4 , нужное нам поле (их несколько, не перепутайте) "address":"41a5cef2c8aa4b4a5381a6889019e85080ef95c290", то что в этом поле и буде вашим адресом получателя
+    # Узнать адрес можно заменив конец этой ссылки на свой адрес https://api.trongrid.io/v1/accounts/TR5vQjeg6LojfCKyvafhENMeAbJLTLQYh4 , нужное нам поле (их несколько, не перепутайте) "address":"41a5cef2c8aa4b4a5381a6889019e85080ef95c290", то что в этом поле и буде вашим адресом получателя
+    # Можно проверить правильность ввода заменив конец этой ссылки https://api.trongrid.io/v1/accounts/41a5cef2c8aa4b4a5381a6889019e85080ef95c290 и перейдя по ней
     # Все эти адреса программа выводит в консоль при запуске. Для использования необходимо раскомментировать нижнюю строчку (удалить # в начале строки)
-#    bttRecipientAddress:
+#    bttRecipientAddress: 41a5cef2c8aa4b4a5381a6889019e85080ef95c290
 
   # Одновременно можно указать много кошельков:
 #  - name: NameSeed5
+#    keyType: seed
+#    keyValue: muffin,elbow,monster,regular,burger,lady,thrive,virtual,curve,mammal,reflect,venue
+#    difference: 1
+#    minAmount: 20000
+#    bttRecipientAddress:
+#  - name: NameSeed6
 #    keyType: seed
 #    keyValue: muffin,elbow,monster,regular,burger,lady,thrive,virtual,curve,mammal,reflect,venue
 #    difference: 1

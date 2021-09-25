@@ -71,7 +71,7 @@ type Balance struct {
 	TokenBalances map[string]int64 `json:"tokenBalances"`
 }
 
-type TronScanResponse struct {
+type TronResponse struct {
 	TokenBalances []struct {
 		TokenId string `json:"tokenId"`
 		Balance string `json:"balance"`

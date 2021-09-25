@@ -181,7 +181,7 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 }
 
 func getGatewayBalance(config *model.Config) model.Balance {
-	var gateway model.TronScanResponse
+	var gateway model.TronResponse
 	var balance model.Balance
 	r, err := http.Get(config.AutoWithdrawConfig.Url)
 	if err != nil {

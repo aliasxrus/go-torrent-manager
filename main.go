@@ -11,6 +11,6 @@ import (
 
 func main() {
 	config := conf.Get()
-	logs.Info("Version:", config.Version)
+	logs.Info("\U0001F9EC Version:", config.Version)
 	beego.Run()
 }

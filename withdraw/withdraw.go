@@ -40,11 +40,11 @@ func init() {
 			os.Exit(1)
 		}
 		if withdrawWallet.BttRecipientAddress == "" {
-			logs.Info(config.AutoWithdrawWallets[i].Name, "BttRecipientAddress:", hex.EncodeToString(config.AutoWithdrawWallets[i].Address.TronAddress))
+			logs.Info(config.AutoWithdrawWallets[i].Name, "💳 BttRecipientAddress:", hex.EncodeToString(config.AutoWithdrawWallets[i].Address.TronAddress))
 		} else {
-			logs.Info(config.AutoWithdrawWallets[i].Name, "BttRecipientAddress:", withdrawWallet.BttRecipientAddress)
+			logs.Info(config.AutoWithdrawWallets[i].Name, "💳 BttRecipientAddress:", withdrawWallet.BttRecipientAddress)
 		}
-		logs.Info(config.AutoWithdrawWallets[i].Name, "LedgerAddress:", base64.StdEncoding.EncodeToString(config.AutoWithdrawWallets[i].Address.LedgerAddress))
+		logs.Info(config.AutoWithdrawWallets[i].Name, "\U0001F9FB LedgerAddress:", base64.StdEncoding.EncodeToString(config.AutoWithdrawWallets[i].Address.LedgerAddress))
 	}
 
 	go refreshBalances(&config)
@@ -60,7 +60,7 @@ func autoWithdraw(config *model.Config) {
 			balance := <-balanceChannel
 			if config.AutoWithdrawWallets[balance.WalletIndex].LedgerBalance != balance.LedgerBalance {
 				config.AutoWithdrawWallets[balance.WalletIndex].LedgerBalance = balance.LedgerBalance
-				logs.Info("Wallet", config.AutoWithdrawWallets[balance.WalletIndex].Name, ", ledger balance:", balance.LedgerBalance/1000000)
+				logs.Info("💵 Wallet", config.AutoWithdrawWallets[balance.WalletIndex].Name, ", ledger balance:", balance.LedgerBalance/1000000)
 			}
 		}
 
@@ -72,7 +72,7 @@ func autoWithdraw(config *model.Config) {
 
 		gatewayBalance := getGatewayBalance(config)
 		if previousGatewayBalance.BttBalance != gatewayBalance.BttBalance {
-			logs.Info("Gateway balance:", gatewayBalance.BttBalance/1000000)
+			logs.Info("💰 Gateway balance:", gatewayBalance.BttBalance/1000000)
 			previousGatewayBalance = gatewayBalance
 		}
 		previousGatewayBalance = gatewayBalance
@@ -110,13 +110,13 @@ func autoWithdraw(config *model.Config) {
 }
 
 func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
-	logs.Info("Withdraw begin!", withdrawWallet.Name, "Amount:", amount)
+	logs.Info("🚀 Withdraw begin!", withdrawWallet.Name, "Amount:", amount)
 	outTxId := time.Now().UnixNano() + time.Now().UnixNano()
 
 	if withdrawWallet.BttRecipientAddress != "" {
 		decodeString, err := hex.DecodeString(withdrawWallet.BttRecipientAddress)
 		if err != nil {
-			logs.Error("Send withdraw, decodeString BttRecipientAddress", withdrawWallet.Name, err.Error())
+			logs.Error("💩 Send withdraw, decodeString BttRecipientAddress", withdrawWallet.Name, err.Error())
 			return
 		}
 		withdrawWallet.Address.TronAddress = decodeString
@@ -124,11 +124,11 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 	//PrepareWithdraw
 	prepareResponse, err := wallet.PrepareWithdraw(context.Background(), withdrawWallet.Address.LedgerAddress, withdrawWallet.Address.TronAddress, amount, outTxId)
 	if err != nil {
-		logs.Error("Send withdraw, PrepareWithdraw", withdrawWallet.Name, err.Error())
+		logs.Error("💩 Send withdraw, PrepareWithdraw", withdrawWallet.Name, err.Error())
 		return
 	}
 	if prepareResponse.Response.Code != exPb.Response_SUCCESS {
-		logs.Error("Send withdraw, PrepareWithdraw, response code", withdrawWallet.Name, prepareResponse.Response.Code, string(prepareResponse.Response.ReturnMessage))
+		logs.Error("💩 Send withdraw, PrepareWithdraw, response code", withdrawWallet.Name, prepareResponse.Response.Code, string(prepareResponse.Response.ReturnMessage))
 		return
 	}
 	logs.Debug("Prepare withdraw success, id", withdrawWallet.Name, prepareResponse.GetId())
@@ -142,7 +142,7 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 	//Sign channel commit.
 	signature, err := wallet.Sign(channelCommit, withdrawWallet.Address.PrivateKeyEcdsa)
 	if err != nil {
-		logs.Error("Send withdraw, signature", withdrawWallet.Name, string(prepareResponse.Response.ReturnMessage))
+		logs.Error("💩 Send withdraw, signature", withdrawWallet.Name, string(prepareResponse.Response.ReturnMessage))
 		return
 	}
 
@@ -160,7 +160,7 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 			return nil
 		})
 	if err != nil {
-		logs.Error("Send withdraw, CreateChannel", withdrawWallet.Name, string(prepareResponse.Response.ReturnMessage))
+		logs.Error("💩 Send withdraw, CreateChannel", withdrawWallet.Name, string(prepareResponse.Response.ReturnMessage))
 		return
 	}
 	logs.Debug("CreateChannel success, channelId:", withdrawWallet.Name, channelId.GetId())
@@ -169,15 +169,15 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 	withdrawResponse, err := wallet.WithdrawRequest(context.Background(), channelId, withdrawWallet.Address.LedgerAddress, amount, prepareResponse, withdrawWallet.Address.PrivateKeyEcdsa)
 	logs.Info("withdrawResponse:", withdrawWallet.Name, string(withdrawResponse.Response.ReturnMessage))
 	if err != nil {
-		logs.Error("Send withdraw, WithdrawRequest", withdrawWallet.Name, err.Error())
+		logs.Error("💩 Send withdraw, WithdrawRequest", withdrawWallet.Name, err.Error())
 		return
 	}
 
 	if withdrawResponse.Response.Code != exPb.Response_SUCCESS {
-		logs.Error("Send withdraw, withdrawResponse", withdrawWallet.Name, string(withdrawResponse.Response.ReturnMessage))
+		logs.Error("💩 Send withdraw, withdrawResponse", withdrawWallet.Name, string(withdrawResponse.Response.ReturnMessage))
 		return
 	}
-	logs.Info("CONGRATULATION! Withdraw submitted!", withdrawWallet.Name, channelId.Id, prepareResponse.GetId())
+	logs.Info("🔥🔥🔥 CONGRATULATION! 🔥🔥🔥 Withdraw submitted! 🎊", withdrawWallet.Name, channelId.Id, prepareResponse.GetId())
 }
 
 func getGatewayBalance(config *model.Config) model.Balance {

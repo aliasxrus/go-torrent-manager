@@ -91,7 +91,7 @@ func transfer(transferWallet model.AutoTransferWallet) {
 					return fmt.Errorf("escrow reponse is nil")
 				}
 				transferWallet.Sum += request.TransferRequest.Amount
-				logs.Info("Wallet:", transferWallet.Name, "Balance after:", math.Floor(float64(response.Balance))/1000000, "Sum:", math.Floor(float64(transferWallet.Sum))/1000000)
+				logs.Info("💸 Wallet:", transferWallet.Name, "Balance after:", math.Floor(float64(response.Balance))/1000000, "Sum:", math.Floor(float64(transferWallet.Sum))/1000000)
 				return nil
 			})
 		if err != nil {

@@ -33,10 +33,6 @@ func init() {
 		return
 	}
 
-	if config.AutoWithdrawConfig.Interval < 100 {
-		config.AutoWithdrawConfig.Interval = 100
-	}
-
 	for i, withdrawWallet := range config.AutoWithdrawWallets {
 		config.AutoWithdrawWallets[i].Address, err = util.GetAddress(withdrawWallet.KeyType, withdrawWallet.KeyValue)
 		if err != nil {
@@ -222,6 +218,13 @@ func getGatewayBalance(config *model.Config) model.Balance {
 			}
 		}
 	} else {
+		balance.TrxBalance = gateway.Data[0].Balance
+		balance.FreeNetUsage = gateway.Data[0].FreeNetUsage
+		for _, tokenBalances := range gateway.Data[0].AssetV2 {
+			if tokenBalances.Key == "1002000" {
+				balance.BttBalance = tokenBalances.Value
+			}
+		}
 	}
 
 	return balance

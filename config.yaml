@@ -1,10 +1,11 @@
 # Наша группа https://t.me/btt_manager
+# YAML за 5 минут: синтаксис и основные возможности https://tproger.ru/translations/yaml-za-5-minut-sintaksis-i-osnovnye-vozmozhnosti/
 
 # Настройки автоматического перевода
 AutoTransferWallets:
     # Имя кошелка, для вывода в логи. Придумываем сами
   - name: NameKey1
-    # Тип ключа, возможные варианты: key, seed
+    # Тип ключа, который будете указывать в keyValue, возможные варианты: key, seed
     keyType: key
     # Ключ или 12 слов в зависимости от указанного keyType
     # 12 слов указываем с маленькой буквы через запятую
@@ -31,10 +32,10 @@ AutoTransferWallets:
 
 # Настройки автоматического вывода
 AutoWithdrawConfig:
-  # Пауза между получением баланса шлюза, в миллисекундах
+  # Пауза между получением баланса шлюза, в миллисекундах. Интервал менее 1000 опасен, возможна пожизненная блокировка.
   interval: 1000
-  # Ссылка для получения баланса
-  url: "https://apiasia.tronscan.io:5566/api/account?address=TTZu7wpHa9tnQjFUDrsjgPfXE7fck7yYs5"
+  # Ссылка для получения баланса. Поддерживает TronGrid и TronScan
+  url: "https://api.trongrid.io/v1/accounts/41c109c53d081d1baf2aa792c7eef5b3a76df4f711"
   # Частота обновления баланса кошельков, в секундах
   refreshTimeout: 60
   # Минимальный таймаут между попытками вывода, в миллисекундах

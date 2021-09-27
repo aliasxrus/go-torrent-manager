@@ -87,6 +87,7 @@ func autoWithdraw(config *model.Config) {
 				withdrawWallet.LedgerBalance < 1000000000 || // Недостаточно средств для вывода
 				(withdrawWallet.Difference > 0 && withdrawWallet.GatewayBalance.BttBalance-gatewayBalance.BttBalance < withdrawWallet.Difference) || // Разница в балансе
 				withdrawWallet.TimeoutWalletWithdraw > time.Since(withdrawWallet.LastWalletWithdraw).Milliseconds() || // Таймаут по выводам с одного кошелька
+				withdrawWallet.TimeoutWithdraw > time.Since(config.AutoWithdrawConfig.LastWithdraw).Milliseconds() || // Таймаут по выводам этого кошелька и общего
 				config.AutoWithdrawConfig.TimeoutWithdraw > time.Since(config.AutoWithdrawConfig.LastWithdraw).Milliseconds() { // Таймаут по выводам
 				config.AutoWithdrawWallets[i].GatewayBalance = gatewayBalance
 				continue
@@ -189,6 +190,10 @@ func getGatewayBalance(config *model.Config) model.Balance {
 		return balance
 	}
 	defer r.Body.Close()
+
+	if config.AutoWithdrawConfig.ApiKey != "" {
+		r.Header.Add("TRON-PRO-API-KEY", config.AutoWithdrawConfig.ApiKey)
+	}
 
 	err = json.NewDecoder(r.Body).Decode(&gateway)
 	if err != nil {

@@ -36,6 +36,8 @@ AutoWithdrawConfig:
   interval: 1000
   # Ссылка для получения баланса. Поддерживает TronGrid и TronScan
   url: "https://api.trongrid.io/v1/accounts/41c109c53d081d1baf2aa792c7eef5b3a76df4f711"
+  # ** ОПЦИОНАЛЬНО ** Api key для TronGrid
+  apiKey: ""
   # Частота обновления баланса кошельков, в секундах
   refreshTimeout: 60
   # Минимальный таймаут между попытками вывода, в миллисекундах

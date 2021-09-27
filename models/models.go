@@ -33,6 +33,7 @@ type AutoWithdrawWallet struct {
 	MaxAmount             int64     `yaml:"maxAmount"`
 	Second                []int     `yaml:"second"`
 	BttRecipientAddress   string    `yaml:"bttRecipientAddress"`   // Адрес получателя BTT
+	TimeoutWithdraw       int64     `yaml:"timeoutWithdraw"`       // Минимальный таймаут с учётом других кошельков, мс
 	TimeoutWalletWithdraw int64     `yaml:"timeoutWalletWithdraw"` // Минимальный таймаут между попытками, мс
 	LastWalletWithdraw    time.Time `yaml:"-"`                     // Время последней попытки с этого кошелька
 	Address               Address   `yaml:"-"`
@@ -43,6 +44,7 @@ type AutoWithdrawWallet struct {
 type AutoWithdrawConfig struct {
 	Interval        int64     `yaml:"interval"`
 	Url             string    `yaml:"url"`
+	ApiKey          string    `yaml:"apiKey"`
 	RefreshTimeout  int64     `yaml:"refreshTimeout"`  // Частота обновления баланса кошельков, секунд
 	TimeoutWithdraw int64     `yaml:"timeoutWithdraw"` // Минимальный таймаут между попытками, мс
 	LastWithdraw    time.Time `yaml:"-"`               // Время последней попытки

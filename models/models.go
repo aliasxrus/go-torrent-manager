@@ -11,6 +11,7 @@ type Config struct {
 	AutoTransferWallets []AutoTransferWallet `yaml:"AutoTransferWallets"`
 	AutoWithdrawWallets []AutoWithdrawWallet `yaml:"AutoWithdrawWallets"`
 	AutoWithdrawConfig  AutoWithdrawConfig   `yaml:"AutoWithdrawConfig"`
+	IpFilterConfig      IpFilterConfig       `yaml:"IpFilterConfig"`
 }
 
 type AutoTransferWallet struct {
@@ -48,6 +49,22 @@ type AutoWithdrawConfig struct {
 	RefreshTimeout  int64     `yaml:"refreshTimeout"`  // Частота обновления баланса кошельков, секунд
 	TimeoutWithdraw int64     `yaml:"timeoutWithdraw"` // Минимальный таймаут между попытками, мс
 	LastWithdraw    time.Time `yaml:"-"`               // Время последней попытки
+}
+
+type IpFilterConfig struct {
+	Interval        int64  `yaml:"interval"`
+	Path            string `yaml:"path"`
+	Username        string `yaml:"username"`
+	Password        string `yaml:"password"`
+	Port            uint16 `yaml:"port"`
+	Url             string `yaml:"url"`
+	Length          int    `yaml:"length"`
+	ErrorLimit      int64  `yaml:"errorLimit"`
+	ClearUTorrent   bool   `yaml:"clearUTorrent"`
+	ClearBitTorrent bool   `yaml:"clearBitTorrent"`
+	ClearLibTorrent bool   `yaml:"clearLibTorrent"`
+	Strategy        int64  `yaml:"strategy"` // all, download
+	GetTokenUrl     string `yaml:"-"`
 }
 
 type BalanceChannel struct {

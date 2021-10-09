@@ -65,6 +65,7 @@ type IpFilterConfig struct {
 	ClearLibTorrent bool    `yaml:"clearLibTorrent"`
 	Strategy        int64   `yaml:"strategy"` // all, download
 	InactiveLimit   float64 `yaml:"inactiveLimit"`
+	StartClient     string  `yaml:"startClient"`
 	GetTokenUrl     string  `yaml:"-"`
 }
 

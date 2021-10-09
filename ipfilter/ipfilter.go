@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -24,6 +26,24 @@ func init() {
 	config := conf.Get()
 	if config.IpFilterConfig.Length == 0 {
 		return
+	}
+
+	if config.IpFilterConfig.StartClient != "" {
+		var cmd *exec.Cmd
+		if runtime.GOOS == "windows" {
+			cmd = exec.Command(config.IpFilterConfig.StartClient)
+		} else {
+			cmd = exec.Command("wine", config.IpFilterConfig.StartClient)
+			cmd.Env = append(os.Environ(), "LANG=C.UTF-8")
+		}
+
+		err := cmd.Start()
+		if err != nil {
+			logs.Error("Start client.", err)
+			os.Exit(1)
+		}
+		logs.Info("Client started...")
+		time.Sleep(15 * time.Second)
 	}
 
 	u, err := url.Parse(config.IpFilterConfig.Url + ":" + strconv.Itoa(int(config.IpFilterConfig.Port)))
@@ -56,10 +76,12 @@ func filter(config model.IpFilterConfig) {
 				errorCounter++
 				continue
 			}
+			continue
 		}
 
 		err := scan(&config)
 		if err != nil {
+			token = ""
 			errorCounter++
 			continue
 		}
@@ -69,6 +91,12 @@ func filter(config model.IpFilterConfig) {
 }
 
 func getToken(config *model.IpFilterConfig) error {
+	defer func() {
+		if r := recover(); r != nil {
+			logs.Error("Get token panic")
+		}
+	}()
+
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", config.GetTokenUrl, nil)
 	if err != nil {
@@ -101,6 +129,12 @@ func getToken(config *model.IpFilterConfig) error {
 }
 
 func scan(config *model.IpFilterConfig) error {
+	defer func() {
+		if r := recover(); r != nil {
+			logs.Error("Ip filter panic")
+		}
+	}()
+
 	var err error
 	cookie := &http.Cookie{
 		Name:  "GUID",
@@ -110,7 +144,7 @@ func scan(config *model.IpFilterConfig) error {
 
 	torrentListUrl, err := url.Parse(config.Url + ":" + strconv.Itoa(int(config.Port)))
 	if err != nil {
-		logs.Error("Ip filter torrent list url.", errorCounter)
+		logs.Error("Ip filter torrent list url.", err)
 		return err
 	}
 	torrentListUrl.Path = "/gui/"
@@ -150,7 +184,7 @@ func scan(config *model.IpFilterConfig) error {
 
 	peerListUrl, err := url.Parse(config.Url + ":" + strconv.Itoa(int(config.Port)))
 	if err != nil {
-		logs.Error("Ip filter peer list url.", errorCounter)
+		logs.Error("Ip filter peer list url.", err)
 		return err
 	}
 	peerListUrl.Path = "/gui/"
@@ -288,6 +322,7 @@ func ClearIpFilter(path string) {
 
 func AddToIpFilter(config *model.IpFilterConfig, banList []string) {
 	if len(blockedIp) > config.Length {
+		blockedIp = make(map[string]bool)
 		ClearIpFilter(config.Path)
 	}
 
@@ -313,7 +348,7 @@ func AddToIpFilter(config *model.IpFilterConfig, banList []string) {
 
 		reloadIpFilterUrl, err := url.Parse(config.Url + ":" + strconv.Itoa(int(config.Port)))
 		if err != nil {
-			logs.Error("Reload ip filter.", errorCounter)
+			logs.Error("Reload ip filter.", err)
 			return
 		}
 		reloadIpFilterUrl.Path = "/gui/"

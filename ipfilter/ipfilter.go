@@ -298,7 +298,41 @@ func AddToIpFilter(config *model.IpFilterConfig, banList []string) {
 	if count > 0 {
 		logs.Debug("Blocked:", count)
 		appendToFile(config.Path, ipListString)
-		// lthuftv ut
+
+		cookie := &http.Cookie{
+			Name:  "GUID",
+			Value: guid,
+			Path:  "/",
+		}
+
+		reloadIpFilterUrl, err := url.Parse(config.Url + ":" + strconv.Itoa(int(config.Port)))
+		if err != nil {
+			logs.Error("Reload ip filter.", errorCounter)
+			return
+		}
+		reloadIpFilterUrl.Path = "/gui/"
+
+		reloadIpFilterQuery := reloadIpFilterUrl.Query()
+		reloadIpFilterQuery.Add("action", "setsetting")
+		reloadIpFilterQuery.Add("s", "ipfilter.enable")
+		reloadIpFilterQuery.Add("v", "1")
+		reloadIpFilterQuery.Add("token", token)
+		reloadIpFilterUrl.RawQuery = reloadIpFilterQuery.Encode()
+
+		client := &http.Client{}
+		torrentListRequest, err := http.NewRequest("GET", reloadIpFilterUrl.String(), nil)
+		if err != nil {
+			logs.Error("Reload ip filter create request.", err)
+			return
+		}
+		torrentListRequest.SetBasicAuth(config.Username, config.Password)
+		torrentListRequest.AddCookie(cookie)
+
+		_, err = client.Do(torrentListRequest)
+		if err != nil {
+			logs.Error("Reload ip filter request.", err)
+			return
+		}
 	}
 }
 

@@ -200,6 +200,12 @@ func scan(config *model.IpFilterConfig) error {
 			client := peer.([]interface{})[5].(string)
 			uploaded := peer.([]interface{})[13].(float64)   // Отдано
 			downloaded := peer.([]interface{})[14].(float64) // Загружено
+			inactive := peer.([]interface{})[20].(float64)   // Время с последней активности в секундах
+
+			if config.InactiveLimit > 0 && inactive > config.InactiveLimit {
+				banList = append(banList, ip)
+				continue
+			}
 
 			if config.Strategy == 1 && state == "DOWNLOADING" && downloaded > uploaded {
 				continue

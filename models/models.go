@@ -20,6 +20,8 @@ type AutoTransferWallet struct {
 	KeyValue            string `yaml:"keyValue"`
 	Recipient           string `yaml:"recipient"`
 	Interval            int64  `yaml:"interval"`
+	PortFile            string `yaml:"portFile"`
+	SpeedPassword       string `yaml:"speedPassword"`
 	TmmRecipientAddress string `yaml:"tmmRecipientAddress"` // TRON for TMM
 	Sum                 int64  `yaml:"-"`
 }

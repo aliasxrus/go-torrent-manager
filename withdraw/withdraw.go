@@ -15,6 +15,7 @@ import (
 	"go-torrent-manager/btfs/wallet"
 	"go-torrent-manager/conf"
 	model "go-torrent-manager/models"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -184,18 +185,32 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 func getGatewayBalance(config *model.Config) model.Balance {
 	var gateway model.TronResponse
 	var balance model.Balance
-	r, err := http.Get(config.AutoWithdrawConfig.Url)
+
+	client := &http.Client{}
+	getGatewayBalanceRequest, err := http.NewRequest("GET", config.AutoWithdrawConfig.Url, nil)
+	if err != nil {
+		logs.Error("Get gateway balance create request.", err)
+		return balance
+	}
+
+	if config.AutoWithdrawConfig.ApiKey != "" {
+		getGatewayBalanceRequest.Header.Add("TRON-PRO-API-KEY", config.AutoWithdrawConfig.ApiKey)
+	}
+
+	getGatewayBalanceResponse, err := client.Do(getGatewayBalanceRequest)
+	if err != nil {
+		logs.Error("Get gateway balance request.", err)
+		return balance
+	}
+	defer getGatewayBalanceResponse.Body.Close()
+
+	gatewayBody, err := ioutil.ReadAll(getGatewayBalanceResponse.Body)
 	if err != nil {
 		logs.Error("Get gateway balance error.", err)
 		return balance
 	}
-	defer r.Body.Close()
 
-	if config.AutoWithdrawConfig.ApiKey != "" {
-		r.Header.Add("TRON-PRO-API-KEY", config.AutoWithdrawConfig.ApiKey)
-	}
-
-	err = json.NewDecoder(r.Body).Decode(&gateway)
+	err = json.Unmarshal(gatewayBody, &gateway)
 	if err != nil {
 		logs.Error("Parse json gateway balance error.", err)
 		return balance

@@ -110,6 +110,7 @@ func getToken(config *model.IpFilterConfig) error {
 		logs.Error("Ip filter get token request.", err)
 		return err
 	}
+	defer res.Body.Close()
 
 	cookieGuid := res.Header["Set-Cookie"]
 	guid = strings.Split(cookieGuid[0], ";")[0]
@@ -168,6 +169,7 @@ func scan(config *model.IpFilterConfig) error {
 		logs.Error("Ip filter get torrent list request.", err)
 		return err
 	}
+	defer torrentListResponse.Body.Close()
 	torrentListBody, err := ioutil.ReadAll(torrentListResponse.Body)
 
 	var torrentList map[string]interface{}
@@ -210,6 +212,7 @@ func scan(config *model.IpFilterConfig) error {
 		logs.Error("Ip filter get peer list request.", err)
 		return err
 	}
+	defer peerListResponse.Body.Close()
 	peerListBody, err := ioutil.ReadAll(peerListResponse.Body)
 
 	var peerList map[string]interface{}
@@ -369,11 +372,12 @@ func AddToIpFilter(config *model.IpFilterConfig, banList []string) {
 		torrentListRequest.SetBasicAuth(config.Username, config.Password)
 		torrentListRequest.AddCookie(cookie)
 
-		_, err = client.Do(torrentListRequest)
+		torrentListResponse, err := client.Do(torrentListRequest)
 		if err != nil {
 			logs.Error("Reload ip filter request.", err)
 			return
 		}
+		defer torrentListResponse.Body.Close()
 	}
 }
 

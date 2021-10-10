@@ -24,6 +24,7 @@ require (
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/mod v0.4.2 // indirect
+	golang.org/x/net v0.0.0-20210929193557-e81a3d93ecf6 // indirect
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	golang.org/x/tools v0.1.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b

@@ -18,6 +18,15 @@ AutoTransferWallets:
     # Пауза между переводами в секундах
     interval: 3
 
+    # Взять ключ из SPEED:
+#  - name: SpeedKey
+#    keyType: speed
+#    keyValue: muffin,elbow,monster,regular,burger,lady,thrive,virtual,curve,mammal,reflect,venue
+#    recipient: BHZJ3obt9IYWJWO8r1wQwhpmGpMHjgru1QhZRNq50o30K0FuDF3DaAeI8Wc9fChkjLyFbtH8ajdeLjZiVwEH3rU=
+#    interval: 3
+#    portFile: C:\Users\Administrator\AppData\Local\BitTorrentHelper\port
+#    speedPassword: BHZJ3obt9IYWJWO8r1wQ
+
     # Одновременно можно указать много кошельков:
 #  - name: NameSeed2
 #    keyType: seed
@@ -36,6 +45,7 @@ AutoWithdrawConfig:
   interval: 1000
   # Ссылка для получения баланса. Поддерживает TronGrid и TronScan
   url: "https://api.trongrid.io/v1/accounts/41c109c53d081d1baf2aa792c7eef5b3a76df4f711"
+#  url: "https://apilist.tronscan.org/api/account?address=TTZu7wpHa9tnQjFUDrsjgPfXE7fck7yYs5"
   # ** ОПЦИОНАЛЬНО ** Api key для TronGrid
   apiKey: ""
   # Частота обновления баланса кошельков, в секундах
@@ -80,3 +90,28 @@ AutoWithdrawWallets:
 #    difference: 1
 #    minAmount: 20000
 #    bttRecipientAddress:
+
+IpFilterConfig:
+  # Частота блокировок
+  interval: 3
+  # Максимальное количество заблокированных IP
+  length: 5000
+  # Путь до ipfilter.dat
+  path: ./ipfilter.dat
+  # Открываем доступ до веб интерфейса: Настройки программы (Ctrl+P) -> Дополнительно -> Веб интерфейс
+  # Ставим галку "Использовать веб-интерфейс"
+  # Придумываем логин и пароль (без спецсимволов или экранируем их), при желании ставим галку "Альтернативный порт" и указываем другой порт
+  # Заполняем поля ниже
+  username: admin
+  password: admin
+  port: 59876
+  # Стратегия блокировки: 0 - блокируем все сторонние клиенты, 1 - при скачивании не блокирует тех кто отдаёт больше чем качает
+  strategy: 0
+  # Блокировка неактивных пиров, в секундах
+  inactiveLimit: 120
+  # Блокировать клиент: true - блокировать
+  clearUTorrent: false
+  clearBitTorrent: false
+  clearLibTorrent: true
+  # Не меняем
+  url: http://127.0.0.1

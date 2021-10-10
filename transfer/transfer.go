@@ -21,9 +21,19 @@ import (
 var escrowService = "https://escrow.btfs.io"
 
 func init() {
+	var err error
 	config := conf.Get()
 
 	for _, transferWallet := range config.AutoTransferWallets {
+		if transferWallet.KeyType == "speed" {
+			transferWallet.KeyValue, err = GetSpeedKey(transferWallet)
+			if err != nil {
+				logs.Error("Get speed key for transfer.", err)
+				os.Exit(1)
+			}
+			transferWallet.KeyType = "key"
+		}
+
 		if transferWallet.Interval < 1 {
 			transferWallet.Interval = 1
 		}

@@ -11,6 +11,7 @@ type Config struct {
 	AutoTransferWallets []AutoTransferWallet `yaml:"AutoTransferWallets"`
 	AutoWithdrawWallets []AutoWithdrawWallet `yaml:"AutoWithdrawWallets"`
 	AutoWithdrawConfig  AutoWithdrawConfig   `yaml:"AutoWithdrawConfig"`
+	IpFilterConfig      IpFilterConfig       `yaml:"IpFilterConfig"`
 }
 
 type AutoTransferWallet struct {
@@ -19,6 +20,8 @@ type AutoTransferWallet struct {
 	KeyValue            string `yaml:"keyValue"`
 	Recipient           string `yaml:"recipient"`
 	Interval            int64  `yaml:"interval"`
+	PortFile            string `yaml:"portFile"`
+	SpeedPassword       string `yaml:"speedPassword"`
 	TmmRecipientAddress string `yaml:"tmmRecipientAddress"` // TRON for TMM
 	Sum                 int64  `yaml:"-"`
 }
@@ -48,6 +51,24 @@ type AutoWithdrawConfig struct {
 	RefreshTimeout  int64     `yaml:"refreshTimeout"`  // Частота обновления баланса кошельков, секунд
 	TimeoutWithdraw int64     `yaml:"timeoutWithdraw"` // Минимальный таймаут между попытками, мс
 	LastWithdraw    time.Time `yaml:"-"`               // Время последней попытки
+}
+
+type IpFilterConfig struct {
+	Interval        int64   `yaml:"interval"`
+	Path            string  `yaml:"path"`
+	Username        string  `yaml:"username"`
+	Password        string  `yaml:"password"`
+	Port            uint16  `yaml:"port"`
+	Url             string  `yaml:"url"`
+	Length          int     `yaml:"length"`
+	ErrorLimit      int64   `yaml:"errorLimit"`
+	ClearUTorrent   bool    `yaml:"clearUTorrent"`
+	ClearBitTorrent bool    `yaml:"clearBitTorrent"`
+	ClearLibTorrent bool    `yaml:"clearLibTorrent"`
+	Strategy        int64   `yaml:"strategy"` // all, download
+	InactiveLimit   float64 `yaml:"inactiveLimit"`
+	StartClient     string  `yaml:"startClient"`
+	GetTokenUrl     string  `yaml:"-"`
 }
 
 type BalanceChannel struct {

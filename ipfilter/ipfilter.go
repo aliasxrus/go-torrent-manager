@@ -43,7 +43,7 @@ func init() {
 			os.Exit(1)
 		}
 		logs.Info("Client started...")
-		time.Sleep(time.Duration(config.IpFilterConfig.StartClientTimeout) * time.Millisecond)
+		time.Sleep(time.Duration(config.IpFilterConfig.StartClientTimeout) * time.Second)
 	}
 
 	u, err := url.Parse(config.IpFilterConfig.Url + ":" + strconv.Itoa(int(config.IpFilterConfig.Port)))

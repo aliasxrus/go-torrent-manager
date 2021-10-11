@@ -54,21 +54,22 @@ type AutoWithdrawConfig struct {
 }
 
 type IpFilterConfig struct {
-	Interval        int64   `yaml:"interval"`
-	Path            string  `yaml:"path"`
-	Username        string  `yaml:"username"`
-	Password        string  `yaml:"password"`
-	Port            uint16  `yaml:"port"`
-	Url             string  `yaml:"url"`
-	Length          int     `yaml:"length"`
-	ErrorLimit      int64   `yaml:"errorLimit"`
-	ClearUTorrent   bool    `yaml:"clearUTorrent"`
-	ClearBitTorrent bool    `yaml:"clearBitTorrent"`
-	ClearLibTorrent bool    `yaml:"clearLibTorrent"`
-	Strategy        int64   `yaml:"strategy"` // all, download
-	InactiveLimit   float64 `yaml:"inactiveLimit"`
-	StartClient     string  `yaml:"startClient"`
-	GetTokenUrl     string  `yaml:"-"`
+	Interval           int64   `yaml:"interval"`
+	Path               string  `yaml:"path"`
+	Username           string  `yaml:"username"`
+	Password           string  `yaml:"password"`
+	Port               uint16  `yaml:"port"`
+	Url                string  `yaml:"url"`
+	Length             int     `yaml:"length"`
+	ErrorLimit         int64   `yaml:"errorLimit"`
+	ClearUTorrent      bool    `yaml:"clearUTorrent"`
+	ClearBitTorrent    bool    `yaml:"clearBitTorrent"`
+	ClearLibTorrent    bool    `yaml:"clearLibTorrent"`
+	Strategy           int64   `yaml:"strategy"` // all, download
+	InactiveLimit      float64 `yaml:"inactiveLimit"`
+	StartClient        string  `yaml:"startClient"`
+	StartClientTimeout int64   `yaml:"startClientTimeout"`
+	GetTokenUrl        string  `yaml:"-"`
 }
 
 type BalanceChannel struct {

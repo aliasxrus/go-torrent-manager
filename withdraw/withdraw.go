@@ -123,8 +123,11 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 		}
 		withdrawWallet.Address.TronAddress = decodeString
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
 	//PrepareWithdraw
-	prepareResponse, err := wallet.PrepareWithdraw(context.Background(), withdrawWallet.Address.LedgerAddress, withdrawWallet.Address.TronAddress, amount, outTxId)
+	prepareResponse, err := wallet.PrepareWithdraw(ctx, withdrawWallet.Address.LedgerAddress, withdrawWallet.Address.TronAddress, amount, outTxId)
 	if err != nil {
 		logs.Error("💩 Send withdraw, PrepareWithdraw", withdrawWallet.Name, err.Error())
 		return
@@ -149,7 +152,7 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 	}
 
 	var channelId *ledgerPb.ChannelID
-	err = grpc.EscrowClient(escrowService).WithContext(context.Background(),
+	err = grpc.EscrowClient(escrowService).WithContext(ctx,
 		func(ctx context.Context, client escrowpb.EscrowServiceClient) error {
 			channelId, err = client.CreateChannel(ctx,
 				&ledgerPb.SignedChannelCommit{Channel: channelCommit, Signature: signature})
@@ -168,7 +171,7 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 	logs.Debug("CreateChannel success, channelId:", withdrawWallet.Name, channelId.GetId())
 
 	//Do the WithdrawRequest.
-	withdrawResponse, err := wallet.WithdrawRequest(context.Background(), channelId, withdrawWallet.Address.LedgerAddress, amount, prepareResponse, withdrawWallet.Address.PrivateKeyEcdsa)
+	withdrawResponse, err := wallet.WithdrawRequest(ctx, channelId, withdrawWallet.Address.LedgerAddress, amount, prepareResponse, withdrawWallet.Address.PrivateKeyEcdsa)
 	logs.Info("withdrawResponse:", withdrawWallet.Name, string(withdrawResponse.Response.ReturnMessage))
 	if err != nil {
 		logs.Error("💩 Send withdraw, WithdrawRequest", withdrawWallet.Name, err.Error())

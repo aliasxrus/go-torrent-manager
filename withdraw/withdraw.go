@@ -113,7 +113,7 @@ func autoWithdraw(config *model.Config) {
 
 func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 	logs.Info("🚀 Withdraw begin!", withdrawWallet.Name, "Amount:", amount)
-	outTxId := time.Now().UnixNano() + time.Now().UnixNano()
+	outTxId := time.Now().UnixNano()
 
 	if withdrawWallet.BttRecipientAddress != "" {
 		decodeString, err := hex.DecodeString(withdrawWallet.BttRecipientAddress)

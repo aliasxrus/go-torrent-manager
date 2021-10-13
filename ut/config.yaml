@@ -1,7 +1,7 @@
 IpFilterConfig:
   interval: 3
   length: 5000
-  path: ./ipfilter.dat
+  path: /home/wineuser/tm/ut/ipfilter.dat
   username: GOMAXPROCS
   password: 4tc2lNElWO4m
   port: 45380

@@ -1,0 +1,19 @@
+IpFilterConfig:
+  interval: 3
+  length: 5000
+  path: ./ipfilter.dat
+  username: GOMAXPROCS
+  password: 4tc2lNElWO4m
+  port: 45380
+  url: http://127.0.0.1
+  errorLimit: 0
+  inactiveLimit: 600
+  strategy: 1
+  clearLibTorrent: true
+#AutoTransferWallets:
+#  - name: Speed
+#    keyType: speed
+#    recipient: BNEY1vf9iFaf4se7m0tIZxYBvDEluTS+u8yLvGFMAyzT9UIDrk+Yi8pdw5ydGtoOt/M/lF1nlcVKwbYvvQie3Xo=
+#    interval: 3
+#    portFile: /home/wineuser/.wine/dosdevices/c:/users/wineuser/Local Settings/Application Data/BitTorrentHelper/port
+#    speedPassword: BHZJ3obt9IYWJWO8r1wQ

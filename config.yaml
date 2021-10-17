@@ -107,7 +107,7 @@ IpFilterConfig:
   # Стратегия блокировки: 0 - блокируем все сторонние клиенты, 1 - при скачивании не блокирует тех кто отдаёт больше чем качает
   strategy: 1
   # Блокировка неактивных пиров, в секундах
-  inactiveLimit: 600
+  inactiveLimit: 0
   # Блокировать клиент: true - блокировать
   clearUTorrent: false
   clearBitTorrent: false

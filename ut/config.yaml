@@ -7,7 +7,7 @@ IpFilterConfig:
   port: 45380
   url: http://127.0.0.1
   errorLimit: 0
-  inactiveLimit: 600
+  inactiveLimit: 0
   strategy: 1
   clearLibTorrent: true
 #AutoTransferWallets:

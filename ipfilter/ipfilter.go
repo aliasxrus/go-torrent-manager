@@ -33,7 +33,7 @@ func init() {
 		if runtime.GOOS == "windows" {
 			cmd = exec.Command(config.IpFilterConfig.StartClient)
 		} else {
-			cmd = exec.Command("wine", config.IpFilterConfig.StartClient)
+			cmd = exec.Command("xvfb-run", "wine", config.IpFilterConfig.StartClient)
 			cmd.Env = append(os.Environ(), "LANG=C.UTF-8")
 		}
 

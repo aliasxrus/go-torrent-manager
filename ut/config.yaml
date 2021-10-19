@@ -10,10 +10,12 @@ IpFilterConfig:
   inactiveLimit: 0
   strategy: 1
   clearLibTorrent: true
-#AutoTransferWallets:
-#  - name: Speed
-#    keyType: speed
-#    recipient: BNEY1vf9iFaf4se7m0tIZxYBvDEluTS+u8yLvGFMAyzT9UIDrk+Yi8pdw5ydGtoOt/M/lF1nlcVKwbYvvQie3Xo=
-#    interval: 3
-#    portFile: /home/wineuser/.wine/dosdevices/c:/users/wineuser/Local Settings/Application Data/BitTorrentHelper/port
-#    speedPassword: BHZJ3obt9IYWJWO8r1wQ
+AutoTransferWallets:
+  - name: Speed
+    keyType: speed
+    recipient: BNEY1vf9iFaf4se7m0tIZxYBvDEluTS+u8yLvGFMAyzT9UIDrk+Yi8pdw5ydGtoOt/M/lF1nlcVKwbYvvQie3Xo=
+    interval: 3
+    portFile: /home/wineuser/.wine/dosdevices/c:/users/wineuser/Local Settings/Application Data/BitTorrentHelper/port
+    startClient: /tm/ut/uTorrent.exe
+    startClientTimeout: 180
+    speedPassword: BHZJ3obt9IYWJWO8r1wQ

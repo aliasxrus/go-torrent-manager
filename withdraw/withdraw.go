@@ -152,21 +152,25 @@ func withdraw(withdrawWallet model.AutoWithdrawWallet, amount int64) {
 	}
 
 	var channelId *ledgerPb.ChannelID
-	err = grpc.EscrowClient(escrowService).WithContext(ctx,
-		func(ctx context.Context, client escrowpb.EscrowServiceClient) error {
-			channelId, err = client.CreateChannel(ctx,
-				&ledgerPb.SignedChannelCommit{Channel: channelCommit, Signature: signature})
-			if err != nil {
-				if err.Error() == ErrInsufficientUserBalanceOnLedger.Error() {
-					return ErrInsufficientUserBalanceOnLedger
+	for i := 0; i < 10; i++ {
+		err = grpc.EscrowClient(escrowService).WithContext(ctx,
+			func(ctx context.Context, client escrowpb.EscrowServiceClient) error {
+				channelId, err = client.CreateChannel(ctx,
+					&ledgerPb.SignedChannelCommit{Channel: channelCommit, Signature: signature})
+				if err != nil {
+					if err.Error() == ErrInsufficientUserBalanceOnLedger.Error() {
+						return ErrInsufficientUserBalanceOnLedger
+					}
+					return err
 				}
-				return err
-			}
-			return nil
-		})
-	if err != nil {
-		logs.Error("💩 Send withdraw, CreateChannel", withdrawWallet.Name, string(prepareResponse.Response.ReturnMessage))
-		return
+				return nil
+			})
+		if err != nil {
+			logs.Error("💩💩💩 Send withdraw, CreateChannel", i)
+			logs.Error("💩 Send withdraw, CreateChannel", withdrawWallet.Name, string(prepareResponse.Response.ReturnMessage))
+			continue
+		}
+		break
 	}
 	logs.Debug("CreateChannel success, channelId:", withdrawWallet.Name, channelId.GetId())
 

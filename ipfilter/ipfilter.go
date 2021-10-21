@@ -5,6 +5,7 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 	"go-torrent-manager/conf"
 	model "go-torrent-manager/models"
+	"go-torrent-manager/transfer"
 	"golang.org/x/net/html"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -21,29 +23,25 @@ var token string
 var guid string
 var blockedIp = make(map[string]bool)
 var errorCounter int64
+var errorLimit int64
 
-func init() {
+func Init(wg *sync.WaitGroup) {
+	var err error
 	config := conf.Get()
 	if config.IpFilterConfig.Length == 0 {
 		return
 	}
+	errorLimit = config.IpFilterConfig.ErrorLimit
 
 	if config.IpFilterConfig.StartClient != "" {
-		var cmd *exec.Cmd
-		if runtime.GOOS == "windows" {
-			cmd = exec.Command(config.IpFilterConfig.StartClient)
-		} else {
-			cmd = exec.Command("xvfb-run", "wine", config.IpFilterConfig.StartClient)
-			cmd.Env = append(os.Environ(), "LANG=C.UTF-8")
-		}
+		startClient(config.IpFilterConfig)
+	}
 
-		err := cmd.Start()
-		if err != nil {
-			logs.Error("Start client.", err)
-			os.Exit(1)
+	for _, transferWallet := range config.AutoTransferWallets {
+		if transferWallet.KeyType == "speed" {
+			speedTransfer(transferWallet, wg)
+			break
 		}
-		logs.Info("Client started...")
-		time.Sleep(time.Duration(config.IpFilterConfig.StartClientTimeout) * time.Second)
 	}
 
 	u, err := url.Parse(config.IpFilterConfig.Url + ":" + strconv.Itoa(int(config.IpFilterConfig.Port)))
@@ -58,22 +56,19 @@ func init() {
 		config.IpFilterConfig.Path = "./ipfilter.dat"
 	}
 
-	go filter(config.IpFilterConfig)
+	wg.Add(1)
+	go filter(config.IpFilterConfig, wg)
 }
 
-func filter(config model.IpFilterConfig) {
+func filter(config model.IpFilterConfig, wg *sync.WaitGroup) {
+	defer wg.Done()
 	ClearIpFilter(config.Path)
 	for range time.Tick(time.Duration(config.Interval) * time.Second) {
-		if config.ErrorLimit > 0 && errorCounter > config.ErrorLimit {
-			logs.Error("Error limit.", errorCounter)
-			os.Exit(1)
-		}
-
 		if token == "" {
 			err := getToken(&config)
 			if err != nil {
 				token = ""
-				errorCounter++
+				errorIncrease()
 				continue
 			}
 			continue
@@ -82,7 +77,13 @@ func filter(config model.IpFilterConfig) {
 		err := scan(&config)
 		if err != nil {
 			token = ""
-			errorCounter++
+			errorIncrease()
+			continue
+		}
+
+		err = transfer.SpeedHealthCheck()
+		if err != nil {
+			errorIncrease()
 			continue
 		}
 
@@ -397,4 +398,54 @@ func appendToFile(path string, text string) {
 		logs.Error("Write to ipfilter.dat.", err)
 		return
 	}
+}
+
+func errorIncrease() {
+	errorCounter++
+
+	if errorLimit > 0 && errorCounter > errorLimit {
+		logs.Error("Error limit.", errorCounter)
+		os.Exit(1)
+	}
+}
+
+func startClient(config model.IpFilterConfig) {
+	var cmd *exec.Cmd
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command(config.StartClient)
+	} else {
+		cmd = exec.Command("xvfb-run", "wine", config.StartClient)
+		cmd.Env = append(os.Environ(), "LANG=C.UTF-8")
+	}
+
+	err := cmd.Start()
+	if err != nil {
+		logs.Error("Start client.", err)
+		os.Exit(1)
+	}
+	logs.Info("Client started...")
+}
+
+func speedTransfer(transferWallet model.AutoTransferWallet, wg *sync.WaitGroup) {
+	var err error
+	for i := 20; i >= 0; i-- {
+		transferWallet.KeyValue, err = transfer.GetSpeedKey(transferWallet)
+		if err != nil {
+			logs.Error("Get speed key for transfer.", err)
+			if i == 0 {
+				os.Exit(1)
+			}
+			errorIncrease()
+			time.Sleep(20 * time.Second)
+			continue
+		}
+		break
+	}
+
+	transferWallet.KeyType = "key"
+	if transferWallet.Interval < 1 {
+		transferWallet.Interval = 1
+	}
+	wg.Add(1)
+	go transfer.Transfer(transferWallet, wg)
 }

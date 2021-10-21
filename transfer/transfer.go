@@ -15,33 +15,30 @@ import (
 	model "go-torrent-manager/models"
 	"math"
 	"os"
+	"sync"
 	"time"
 )
 
 var escrowService = "https://escrow.btfs.io"
 
-func init() {
-	var err error
+func Init(wg *sync.WaitGroup) {
 	config := conf.Get()
 
 	for _, transferWallet := range config.AutoTransferWallets {
 		if transferWallet.KeyType == "speed" {
-			transferWallet.KeyValue, err = GetSpeedKey(transferWallet)
-			if err != nil {
-				logs.Error("Get speed key for transfer.", err)
-				os.Exit(1)
-			}
-			transferWallet.KeyType = "key"
+			continue
 		}
 
 		if transferWallet.Interval < 1 {
 			transferWallet.Interval = 1
 		}
-		go transfer(transferWallet)
+		wg.Add(1)
+		go Transfer(transferWallet, wg)
 	}
 }
 
-func transfer(transferWallet model.AutoTransferWallet) {
+func Transfer(transferWallet model.AutoTransferWallet, wg *sync.WaitGroup) {
+	defer wg.Done()
 	var balance model.Balance
 	address, err := util.GetAddress(transferWallet.KeyType, transferWallet.KeyValue)
 	if err != nil {

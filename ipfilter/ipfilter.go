@@ -180,6 +180,11 @@ func scan(config *model.IpFilterConfig) error {
 		return err
 	}
 
+	if len(torrentList["torrents"].([]interface{})) == 0 {
+		logs.Info("Torrents not found")
+		return nil
+	}
+
 	torrents := make(map[string]string)
 	for _, torrent := range torrentList["torrents"].([]interface{}) {
 		torrents[torrent.([]interface{})[0].(string)] = GetTorrentStateInfo(int(torrent.([]interface{})[1].(float64)), int(torrent.([]interface{})[4].(float64)))

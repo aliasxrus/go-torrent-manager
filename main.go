@@ -2,16 +2,21 @@ package main
 
 import (
 	"github.com/beego/beego/v2/core/logs"
-	beego "github.com/beego/beego/v2/server/web"
 	"go-torrent-manager/conf"
-	_ "go-torrent-manager/ipfilter"
-	_ "go-torrent-manager/routers"
-	_ "go-torrent-manager/transfer"
-	_ "go-torrent-manager/withdraw"
+	"go-torrent-manager/ipfilter"
+	"go-torrent-manager/transfer"
+	"go-torrent-manager/withdraw"
+	"sync"
 )
 
 func main() {
+	var wg sync.WaitGroup
+
+	ipfilter.Init(&wg)
+	transfer.Init(&wg)
+	withdraw.Init(&wg)
+
 	config := conf.Get()
 	logs.Info("\U0001F9EC Version:", config.Version)
-	beego.Run()
+	wg.Wait()
 }

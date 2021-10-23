@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -26,7 +27,7 @@ var escrowService = "https://escrow.btfs.io"
 var ErrInsufficientUserBalanceOnLedger = errors.New("rpc error: code = ResourceExhausted desc = NSF")
 var balanceChannel = make(chan model.BalanceChannel, 10)
 
-func init() {
+func Init(wg *sync.WaitGroup) {
 	var err error
 	config := conf.Get()
 
@@ -48,11 +49,13 @@ func init() {
 		logs.Info(config.AutoWithdrawWallets[i].Name, "\U0001F9FB LedgerAddress:", base64.StdEncoding.EncodeToString(config.AutoWithdrawWallets[i].Address.LedgerAddress))
 	}
 
-	go refreshBalances(&config)
-	go autoWithdraw(&config)
+	wg.Add(2)
+	go refreshBalances(&config, wg)
+	go autoWithdraw(&config, wg)
 }
 
-func autoWithdraw(config *model.Config) {
+func autoWithdraw(config *model.Config, wg *sync.WaitGroup) {
+	defer wg.Done()
 	logs.Info("Start auto withdraw")
 
 	previousGatewayBalance := model.Balance{BttBalance: -1}
@@ -253,7 +256,8 @@ func getGatewayBalance(config *model.Config) model.Balance {
 	return balance
 }
 
-func refreshBalances(config *model.Config) {
+func refreshBalances(config *model.Config, wg *sync.WaitGroup) {
+	defer wg.Done()
 	for true {
 		for i, withdrawWallet := range config.AutoWithdrawWallets {
 			ledgerBalance, err := wallet.GetLedgerBalance(withdrawWallet.Address)

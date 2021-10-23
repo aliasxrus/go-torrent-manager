@@ -24,6 +24,8 @@ const (
 	tokenUrl       = api + "/token"
 )
 
+var speedPort int64
+
 func GetSpeedKey(wallet model.AutoTransferWallet) (string, error) {
 	password := url.QueryEscape(wallet.SpeedPassword)
 	pf, err := os.Open(wallet.PortFile)
@@ -34,6 +36,7 @@ func GetSpeedKey(wallet model.AutoTransferWallet) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	speedPort = port
 	token, err := get(fmt.Sprintf(tokenUrl, port))
 	if err != nil {
 		return "", err
@@ -86,5 +89,13 @@ func setPassword(url string, password string) error {
 		return err
 	}
 	defer resp.Body.Close()
+	return nil
+}
+
+func SpeedHealthCheck() error {
+	_, err := get(fmt.Sprintf(tokenUrl, speedPort))
+	if err != nil {
+		return err
+	}
 	return nil
 }

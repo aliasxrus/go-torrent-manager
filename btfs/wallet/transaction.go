@@ -12,7 +12,7 @@ import (
 )
 
 var exchangeService = "https://exchange.bt.co"
-var escrowService = "https://ledger.bt.co:443"
+var escrowService = "https://escrow.btfs.io"
 
 // Call exchange's Withdraw API
 func PrepareWithdraw(ctx context.Context, ledgerAddr, externalAddr []byte, amount, outTxId int64) (
@@ -116,7 +116,8 @@ func GetLedgerBalance(address model.Address) (int64, error) {
 	var balance int64 = 0
 	err = grpc.EscrowClient(escrowService).WithContext(context.Background(),
 		func(ctx context.Context, client escrowpb.EscrowServiceClient) error {
-			res, err := client.BalanceOf(ctx, ledger.NewSignedCreateAccountRequest(lgSignedPubKey.Key, lgSignedPubKey.Signature))
+			res, err := client.BalanceOf(ctx, ledger.NewAccount(lgSignedPubKey.Key, lgSignedPubKey.Signature))
+			//res, err := client.BalanceOf(ctx, ledger.NewSignedCreateAccountRequest(lgSignedPubKey.Key, lgSignedPubKey.Signature))
 			if err != nil {
 				return err
 			}

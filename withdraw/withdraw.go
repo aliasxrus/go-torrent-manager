@@ -23,7 +23,7 @@ import (
 	"time"
 )
 
-var escrowService = "https://ledger.bt.co:443"
+var escrowService = "https://escrow.btfs.io"
 var ErrInsufficientUserBalanceOnLedger = errors.New("rpc error: code = ResourceExhausted desc = NSF")
 var balanceChannel = make(chan model.BalanceChannel, 10)
 

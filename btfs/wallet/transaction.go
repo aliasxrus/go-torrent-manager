@@ -12,7 +12,7 @@ import (
 )
 
 var exchangeService = "https://exchange.bt.co"
-var escrowService = "https://ledger.bt.co:443"
+var escrowService = "https://escrow.btfs.io"
 
 // Call exchange's Withdraw API
 func PrepareWithdraw(ctx context.Context, ledgerAddr, externalAddr []byte, amount, outTxId int64) (

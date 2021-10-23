@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-var escrowService = "https://ledger.bt.co:443"
+var escrowService = "https://escrow.btfs.io"
 
 func Init(wg *sync.WaitGroup) {
 	config := conf.Get()

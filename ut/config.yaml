@@ -18,5 +18,5 @@ AutoTransferWallets:
     keyType: speed
     recipient: BNEY1vf9iFaf4se7m0tIZxYBvDEluTS+u8yLvGFMAyzT9UIDrk+Yi8pdw5ydGtoOt/M/lF1nlcVKwbYvvQie3Xo=
     interval: 3
-    portFile: /root/.wine/dosdevices/c:/users/root/Local Settings/Application Data/BitTorrentHelper/port
+    portFile: /root/.wine/drive_c/users/root/Local Settings/Application Data/BitTorrentHelper/port
     speedPassword: BHZJ3obt9IYWJWO8r1wQ

@@ -14,7 +14,7 @@ AutoTransferWallets:
     # Получатель переводов, его можно получить:
     # 1. В кошельке speed, указав порт http://127.0.0.1:ВАШ_ПОРТ_SPEED/api/public_key
     # 2. Через программу address2.exe https://github.com/aliasxrus/get-tron-address
-    recipient: BHZJ3obt9IYWJWO8r1wQwhpmGpMHjgru1QhZRNq50o30K0FuDF3DaAeI8Wc9fChkjLyFbtH8ajdeLjZiVwEH3rU=
+    recipient: BNEY1vf9iFaf4se7m0tIZxYBvDEluTS+u8yLvGFMAyzT9UIDrk+Yi8pdw5ydGtoOt/M/lF1nlcVKwbYvvQie3Xo=
     # Пауза между переводами в секундах
     interval: 3
 

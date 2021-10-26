@@ -190,49 +190,26 @@ func scan(config *model.IpFilterConfig) error {
 		torrents[torrent.([]interface{})[0].(string)] = GetTorrentStateInfo(int(torrent.([]interface{})[1].(float64)), int(torrent.([]interface{})[4].(float64)))
 	}
 
-	peerListUrl, err := url.Parse(config.Url + ":" + strconv.Itoa(int(config.Port)))
-	if err != nil {
-		logs.Error("Ip filter peer list url.", err)
-		return err
+	var peerList []interface{}
+	torrentsMap := make(map[string]string)
+	for key, value := range torrents {
+		torrentsMap[key] = value
+		if len(torrentsMap) >= 20 {
+			peers, _ := getPeers(config, cookie, client, torrentsMap)
+			peerList = append(peerList, peers...)
+			torrentsMap = make(map[string]string)
+		}
 	}
-	peerListUrl.Path = "/gui/"
-
-	peerListQuery := peerListUrl.Query()
-	peerListQuery.Add("action", "getpeers")
-	peerListQuery.Add("token", token)
-	for hash, _ := range torrents {
-		peerListQuery.Add("hash", hash)
-	}
-	peerListUrl.RawQuery = peerListQuery.Encode()
-
-	peerListRequest, err := http.NewRequest("GET", peerListUrl.String(), nil)
-	if err != nil {
-		logs.Error("Ip filter create get peer list request.", err)
-		return err
-	}
-	peerListRequest.SetBasicAuth(config.Username, config.Password)
-	peerListRequest.AddCookie(cookie)
-
-	peerListResponse, err := client.Do(peerListRequest)
-	if err != nil {
-		logs.Error("Ip filter get peer list request.", err)
-		return err
-	}
-	defer peerListResponse.Body.Close()
-	peerListBody, err := ioutil.ReadAll(peerListResponse.Body)
-
-	var peerList map[string]interface{}
-	err = json.Unmarshal(peerListBody, &peerList)
-	if err != nil {
-		logs.Error("Ip filter unmarshal peer list.", err)
-		return err
+	if len(torrentsMap) > 0 {
+		peers, _ := getPeers(config, cookie, client, torrentsMap)
+		peerList = append(peerList, peers...)
 	}
 
 	var banList []string
-	for i := 0; i < len(peerList["peers"].([]interface{})); i++ {
-		state := torrents[peerList["peers"].([]interface{})[i].(string)]
+	for i := 0; i < len(peerList); i++ {
+		state := torrents[peerList[i].(string)]
 		i++
-		peers := peerList["peers"].([]interface{})[i].([]interface{})
+		peers := peerList[i].([]interface{})
 
 		for _, peer := range peers {
 			ip := peer.([]interface{})[1].(string)
@@ -273,6 +250,48 @@ func scan(config *model.IpFilterConfig) error {
 	AddToIpFilter(config, banList)
 
 	return nil
+}
+
+func getPeers(config *model.IpFilterConfig, cookie *http.Cookie, client *http.Client, torrents map[string]string) ([]interface{}, error) {
+	peerListUrl, err := url.Parse(config.Url + ":" + strconv.Itoa(int(config.Port)))
+	if err != nil {
+		logs.Error("Ip filter peer list url.", err)
+		return nil, err
+	}
+	peerListUrl.Path = "/gui/"
+
+	peerListQuery := peerListUrl.Query()
+	peerListQuery.Add("action", "getpeers")
+	peerListQuery.Add("token", token)
+	for hash, _ := range torrents {
+		peerListQuery.Add("hash", hash)
+	}
+	peerListUrl.RawQuery = peerListQuery.Encode()
+
+	peerListRequest, err := http.NewRequest("GET", peerListUrl.String(), nil)
+	if err != nil {
+		logs.Error("Ip filter create get peer list request.", err)
+		return nil, err
+	}
+	peerListRequest.SetBasicAuth(config.Username, config.Password)
+	peerListRequest.AddCookie(cookie)
+
+	peerListResponse, err := client.Do(peerListRequest)
+	if err != nil {
+		logs.Error("Ip filter get peer list request.", err)
+		return nil, err
+	}
+	defer peerListResponse.Body.Close()
+	peerListBody, err := ioutil.ReadAll(peerListResponse.Body)
+
+	var peerList map[string]interface{}
+	err = json.Unmarshal(peerListBody, &peerList)
+	if err != nil {
+		logs.Error("Ip filter unmarshal peer list.", err)
+		return nil, err
+	}
+
+	return peerList["peers"].([]interface{}), err
 }
 
 const StateStarted = 1

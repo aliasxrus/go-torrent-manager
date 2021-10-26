@@ -20,7 +20,7 @@ func Get() model.Config {
 		os.Exit(1)
 	}
 
-	config.Version = "0.0.8"
+	config.Version = "0.0.9"
 	return config
 }
 

@@ -195,13 +195,19 @@ func scan(config *model.IpFilterConfig) error {
 	for key, value := range torrents {
 		torrentsMap[key] = value
 		if len(torrentsMap) >= 20 {
-			peers, _ := getPeers(config, cookie, client, torrentsMap)
+			peers, err := getPeers(config, cookie, client, torrentsMap)
+			if err != nil {
+				return err
+			}
 			peerList = append(peerList, peers...)
 			torrentsMap = make(map[string]string)
 		}
 	}
 	if len(torrentsMap) > 0 {
-		peers, _ := getPeers(config, cookie, client, torrentsMap)
+		peers, err := getPeers(config, cookie, client, torrentsMap)
+		if err != nil {
+			return err
+		}
 		peerList = append(peerList, peers...)
 	}
 

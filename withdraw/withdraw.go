@@ -81,7 +81,11 @@ func autoWithdraw(config *model.Config, wg *sync.WaitGroup) {
 		}
 		previousGatewayBalance = gatewayBalance
 
-		if gatewayBalance.BttBalance < 1000000000 || gatewayBalance.TrxBalance < 282000 {
+		if gatewayBalance.BttBalance < 1000000000 {
+			continue
+		}
+
+		if (1500-gatewayBalance.FreeNetUsage) < config.AutoWithdrawConfig.MinBandwidth && gatewayBalance.TrxBalance < config.AutoWithdrawConfig.MinTrx {
 			continue
 		}
 

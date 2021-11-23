@@ -51,6 +51,8 @@ type AutoWithdrawConfig struct {
 	RefreshTimeout  int64     `yaml:"refreshTimeout"`  // Частота обновления баланса кошельков, секунд
 	TimeoutWithdraw int64     `yaml:"timeoutWithdraw"` // Минимальный таймаут между попытками, мс
 	LastWithdraw    time.Time `yaml:"-"`               // Время последней попытки
+	MinTrx          int64     `yaml:"minTrx"`
+	MinBandwidth    int64     `yaml:"minBandwidth"`
 }
 
 type IpFilterConfig struct {

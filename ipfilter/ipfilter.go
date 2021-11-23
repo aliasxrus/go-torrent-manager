@@ -244,7 +244,7 @@ func scan(config *model.IpFilterConfig) error {
 
 			isUtVersion := strings.Contains(client, "3.5.5") && !config.ClearUTorrent
 			isBtVersion := strings.Contains(client, "7.10.5") && !config.ClearBitTorrent
-			isLtVersion := strings.Contains(client, "1.2.2") && !config.ClearLibTorrent
+			isLtVersion := strings.Contains(client, "1.2.3") && !config.ClearLibTorrent
 			withBttVersion := isUtVersion || isBtVersion || isLtVersion
 
 			if !withBttVersion {

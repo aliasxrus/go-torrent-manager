@@ -43,8 +43,8 @@ AutoWithdrawConfig:
   # Пауза между получением баланса шлюза, в миллисекундах. Интервал менее 1000 опасен, возможна пожизненная блокировка.
   interval: 1000
   # Ссылка для получения баланса. Поддерживает TronGrid и TronScan
-  url: "https://api.trongrid.io/v1/accounts/41c109c53d081d1baf2aa792c7eef5b3a76df4f711"
-#  url: "https://apilist.tronscan.org/api/account?address=TTZu7wpHa9tnQjFUDrsjgPfXE7fck7yYs5"
+  url: "https://api.trongrid.io/v1/accounts/41e20c8f7dcdef8233db394f76580b0998b51f7cd4"
+#  url: "https://apilist.tronscan.org/api/account?address=TWaSm8dnvTdJQ9hcpW3g8m4QEfJspcuDwA"
   # ** ОПЦИОНАЛЬНО ** Api key для TronGrid
   apiKey: ""
   # Частота обновления баланса кошельков, в секундах

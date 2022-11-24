@@ -243,9 +243,10 @@ func scan(config *model.IpFilterConfig) error {
 			}
 
 			isUtVersion := strings.Contains(client, "3.5") && !config.ClearUTorrent
+			isUtVersion36 := strings.Contains(client, "3.6") && !config.ClearUTorrent
 			isBtVersion := strings.Contains(client, "7.1") && !config.ClearBitTorrent
 			isLtVersion := strings.Contains(client, "1.2") && !config.ClearLibTorrent
-			withBttVersion := isUtVersion || isBtVersion || isLtVersion
+			withBttVersion := isUtVersion || isBtVersion || isLtVersion || isUtVersion36
 
 			if !withBttVersion {
 				banList = append(banList, ip)
